@@ -1,0 +1,241 @@
+﻿@using GCServices.ConsumerPortal.UI
+@using GCServices.ConsumerPortal.UI.Models
+@model DemographicInfoViewModel
+@{
+    ViewBag.Title = StringResources.UpdateProfile_cshtml_Execute_MY_PROFILE;
+    ViewBag.BackgroundClass = "background-image-payment-review";
+}
+
+<div>
+    <div>
+        <h1 class="right-title-dark">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6 col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row padding-left-right-dynamic">
+            <div class="col-xs-12">
+                <h3>@StringResources.UpdateProfile_cshtml_Execute_MY_PROFILE_small</h3>
+                <p>@StringResources.UpdateProfile_cshtml_Execute_If_you_would_like_to_update</p>
+            </div>
+            <section class="payment-form">
+                @using (Html.BeginForm("UpdateProfile", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form", id = "profileForm", name = "profileForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="col-xs-12 margin-bottom-20">
+                        <input name="updateProfileButton" type="submit" value="@StringResources.UpdateProfile_cshtml_Execute_UPDATE_PROFILE" @(Model.IsEditMode ? "disabled" : "") class="btn btn-ok" />
+                    </div>
+                }
+            </section>
+            <section id="profileForm" class="payment-form">
+                @using (Html.BeginForm("UpdateProfile", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form", id = "profileForm", name = "profileForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Name)
+                    @Html.HiddenFor(m => m.GcNumber)
+                    @Html.HiddenFor(m => m.AmountDue)
+                    @Html.HiddenFor(m => m.IsEditMode)
+                    @Html.HiddenFor(m => m.IsZipCodeValid)
+                    <div class="form-group">
+                        <div>@Html.ValidationMessage("Address", "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.AddressLine1, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.AddressLine2, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.Zipcode, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.CellPhoneNumber, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.Name, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        <span class="form-text">@Html.DisplayFor(m => m.Name)</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.AddressLine1, new { @class = "col-sm-2 control-label required" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicAddressUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.AddressLine1, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.AddressLine1)
+                                            <span class="form-text">@Html.DisplayFor(m => m.AddressLine1)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.AddressLine2, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicAddressUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.AddressLine2, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.AddressLine2)
+                                            <span class="form-text">@Html.DisplayFor(m => m.AddressLine2)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.Zipcode, new { @class = "col-sm-2 control-label required" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicAddressUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.Zipcode, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.Zipcode)
+                                            <span class="form-text">@Html.DisplayFor(m => m.Zipcode)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div id="AreaForRefresh">
+                                    <div class="col-sm-12 col-xs-12">
+                                        @Html.LabelFor(m => m.City, new { @class = "col-sm-2 control-label required" })
+                                        <div class="col-sm-10">
+                                            @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicAddressUpdates)
+                                            {
+                                                @Html.TextBoxFor(m => m.City, new { @class = "form-control", autocomplete = "off" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(m => m.City)
+                                                <span class="form-text">@Html.DisplayFor(m => m.City)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-xs-12">
+                                        @Html.LabelFor(m => m.State, new { @class = "col-sm-2 control-label required" })
+                                        <div class="col-sm-10">
+                                            @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicAddressUpdates)
+                                            {
+                                                @Html.DropDownListFor(m => m.State, new SelectList(Enum.GetValues(typeof(State))), "Select", new { @class = "form-control" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(m => m.State)
+                                                <span class="form-text">@Html.DisplayFor(m => m.State)</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.PhoneNumber, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicHomePhoneUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.PhoneNumber)
+                                            <span class="form-text">@Html.DisplayFor(m => m.PhoneNumber)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.CellPhoneNumber, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicCellPhoneUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.CellPhoneNumber, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.CellPhoneNumber)
+                                            <span class="form-text">@Html.DisplayFor(m => m.CellPhoneNumber)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.Email, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowDemographicEmailUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.Email)
+                                            <span class="form-text">@Html.DisplayFor(m => m.Email)</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-xs-12">
+                                    @Html.LabelFor(m => m.Employer, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-10">
+                                        @if (Model.IsEditMode && Model.ClientPermissionSettings.ClientAllowPOEUpdates)
+                                        {
+                                            @Html.TextBoxFor(m => m.Employer, new { @class = "form-control", autocomplete = "off" })
+                                        }
+                                        else
+                                        {
+                                            @Html.HiddenFor(m => m.Employer)
+                                            <span class="form-text">@Html.DisplayFor(m => m.Employer)</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    if (Model.IsEditMode)
+                    {
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <p>@StringResources.UpdateProfile_cshtml_Execute_Notice_to_NY_Residents</p>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="col-sm-offset-3 col-sm-6 margin-top-20 margin-bottom-20">
+                                        <input name="cancelButton" type="button" value="@StringResources.UpdateProfile_cshtml_Execute_CANCEL" id="cancelButton" class="btn btn-cancel margin-right-10" onclick="location.href = '@Url.Action("ManageMyAccount", "Home")'" />
+                                        <input name="submitButton" type="submit" value="@StringResources.UpdateProfile_cshtml_Execute_SUBMIT_CHANGES" id="submitButton" class="btn btn-primary btn-ok" onclick="alert('@Html.Raw(StringResources.UpdateProfile_cshtml_Execute_Prompt_on_submit)')" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/UpdateProfile.js"></script>
+}

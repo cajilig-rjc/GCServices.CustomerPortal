@@ -1,0 +1,36 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.NewCard
+
+<div>
+    <p>
+        @StringResources.PaymentConfirmation_Name_label @Html.DisplayFor(m => m.NameOnCard) <br />
+        @StringResources.PaymentConfirmation_CardType_label @Html.DisplayFor(m => m.Card) <br />
+        @StringResources.PaymentConfirmation_CardNumber_label @Html.DisplayFor(m => m.RedactedCardNumber) <br />
+        @StringResources.PaymentConfirmation_Expiration_label @Html.DisplayFor(m => m.ExpirationDate) <br />
+    </p>
+
+    <p>
+        @StringResources.PaymentConfirmation_Phone_label @Html.DisplayFor(m => m.PhoneNumber)
+    </p>
+    <p>
+        @StringResources.PaymentConfirmation_HomeAddress_label @Html.DisplayFor(m => m.Address) <br />
+        @StringResources.PaymentConfirmation_City_label @Html.DisplayFor(m => m.City) <br />
+        @StringResources.PaymentConfirmation_State_label <span id="State">@Html.DisplayFor(m => m.State)</span> <br />
+        @StringResources.PaymentConfirmation_Zip_label @Html.DisplayFor(m => m.Zipcode) <br />
+    </p>
+    @if (Model.IsBillingAddressSame)
+    {
+        <p>
+            @StringResources.PaymentConfirmation_BillingSameAsHome_txt
+        </p>
+    }
+    else
+    {
+        <p>
+            @StringResources.PaymentConfirmation_BillingAddress_label @Html.DisplayFor(m => m.BillingAddress) <br />
+            @StringResources.PaymentConfirmation_City_label @Html.DisplayFor(m => m.BillingCity) <br />
+            @StringResources.PaymentConfirmation_State_label <span id="BillingState">@Html.DisplayFor(m => m.BillingState)</span> <br />
+            @StringResources.PaymentConfirmation_Zip_label @Html.DisplayFor(m => m.BillingZipcode) <br />
+        </p>
+    }
+
+</div>

@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "";
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    ViewBag.HideLogout = true;
+
+    string localizedName = string.Empty;
+    string lang = (string)this.ViewContext.RouteData.Values["lang"];
+    if (lang != null)
+    {
+        string langHome = String.Format(System.Globalization.CultureInfo.InvariantCulture, "/{0}/Home", lang);
+        localizedName = lang.StartsWith("es", StringComparison.OrdinalIgnoreCase) ? "_es" : string.Empty;
+    }
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="privacy-box">
+                    @Html.Partial("NYCLanguageStatement" + localizedName)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/Privacy.js"></script>
+}

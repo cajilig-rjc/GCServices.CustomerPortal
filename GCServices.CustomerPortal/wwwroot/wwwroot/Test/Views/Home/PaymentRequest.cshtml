@@ -1,0 +1,258 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.PaymentRequestViewModel
+@{
+    ViewBag.Title = StringResources.PaymentRequest_VBT;
+    ViewBag.BackgroundClass = "background-image-payment-request";
+    string format = StringResources.SettlementOffer_Link;
+    string settlementOfferLink = string.Format(System.Globalization.CultureInfo.InvariantCulture, format, "PaymentRequest");
+}
+
+<script>
+    var Resources = {
+        PaymentRequestJs_InvalidCreditCard_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.PaymentRequestJs_InvalidCreditCard_txt))",
+        PaymentRequestJs_MaxPaymentAmount_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.PaymentRequestJs_MaxPaymentAmount_txt))",
+        PaymentRequestJs_MaxPaymentAmount_2_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.PaymentRequestJs_MaxPaymentAmount_2_txt))",
+        PaymentRequestJs_MinPaymentAmount_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.PaymentRequestJs_MinPaymentAmount_txt))"
+    };
+</script>
+
+<div>
+    <div>
+        <div class="right-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+        
+        @if (Model.HasSettlementOffer && Model.ClientAllowsSettlement)
+        {
+            <div class="text-danger">
+                @Html.Raw(settlementOfferLink)
+            </div>
+        }
+
+        @if (!Model.IsOneTimePayment && !Model.IsNewSchedule && !Model.PaymentArrangementMarkedToBeDeleted)
+        {
+            <div class="text-danger">
+                @StringResources.PaymentRequest_ArrangementPrompt1_txt @Html.ActionLink(@StringResources.PaymentRequest_ArrangementPrompt2_txt, "EditSchedule") @StringResources.PaymentRequest_ArrangementPrompt3_txt
+            </div>
+        }
+
+            <section>
+                @using (Html.BeginForm("PaymentRequest", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "paymentForm", name = "paymentForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Name)
+                    @Html.HiddenFor(m => m.GcNumber)
+                    @Html.HiddenFor(m => m.ClientAccountNumber)
+                    @Html.HiddenFor(m => m.AmountDue)
+                    @Html.HiddenFor(m => m.MinAmountDue)
+                    @Html.HiddenFor(m => m.MaxAmountDue)
+                    @Html.HiddenFor(m => m.MinimumAllowedAmount)
+                    @Html.HiddenFor(m => m.OfficeCode)
+                    @Html.HiddenFor(m => m.CardFlag)
+                    @Html.HiddenFor(m => m.CardOption)
+                    @Html.HiddenFor(m => m.MasterClientIdentifier)
+                    @Html.HiddenFor(m => m.BusinessEntityCode)
+                    @Html.HiddenFor(m => m.ClientBillingName)
+                    @Html.HiddenFor(m => m.StarFileNumber)
+                    @Html.HiddenFor(m => m.IsOneTimePayment)
+                    @Html.HiddenFor(m => m.IsNewSchedule)
+                    @Html.HiddenFor(m => m.PaymentArrangementMarkedToBeDeleted)
+
+                    <div class="form-group">
+                        <div>@Html.ValidationMessageFor(m => m.PaymentAmount, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.ConfirmEmail, "", new { @class = "text-danger" })</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12 page-title">@StringResources.PaymentRequest_CardPayment_txt</div>
+                        @if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.None)
+                        {
+                            <div class="col-sm-12">@StringResources.PaymentRequestMobil_ProvidePaymentInformation_txt</div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-12">@StringResources.PaymentRequest_PaymentPrompt_txt</div>
+                        }
+                        @if (Model.CardFlag == "C")
+                        {
+                            <div class="col-sm-12">@StringResources.Cards_CreditOnly_txt</div>
+                        }
+                        else if (Model.CardFlag == "D")
+                        {
+                            <div class="col-sm-12">@StringResources.Cards_DebitOnly_txt</div>
+                        }
+                    </div>
+
+                    if (Model.CardOption != GCServices.ConsumerPortal.UI.Models.CardOption.None)
+                    {
+                        <div class="form-group">
+                            <div class="col-sm-12 input-group-title">@StringResources.PaymentRequest_PaymentAmount_txt</div>
+                            <div class="form-inline col-sm-12">
+                                <div class="col-sm-12">
+                                    @Html.LabelFor(m => m.PaymentAmount, new { @class = "control-label margin-right-10 required" })
+                                    @Html.TextBoxFor(m => m.PaymentAmount, new { @class = "form-control", autocomplete = "off", maxlength = 7 })
+                                    @if (Model.MinimumAllowedAmount > 0)
+                                    {
+                                        @Html.LabelFor(m => m.MinAmountDue)
+                                        @Html.Raw(": ")
+                                        @Html.DisplayFor(m => m.MinimumAllowedAmount)
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                @if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.NewCard)
+                                {
+                                    @Html.EditorFor(m => m.NewCard)
+                                }
+                                else if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.FromWallet)
+                                {
+                                    @Html.HiddenFor(m => m.HomeState)
+                                    @Html.EditorFor(m => m.CardFromWallet)
+                                }
+                                else
+                                {
+                                    <div class="margin-bottom-20">
+                                        <div>
+                                            @Html.ActionLink(StringResources.PaymentMethod_NewCard_txt, "PaymentRequest", new { cardOption = "NewCard" }, new { @class = "btn btn-primary btn-ok button-width-large margin-right-20" })
+                                        </div>
+                                        <div>
+                                            @StringResources.PaymentMethod_NewCard_Description_txt
+                                        </div>
+                                    </div>
+                                    <div class="margin-bottom-20">
+                                        <div>
+                                            @Html.ActionLink(StringResources.PaymentMethod_FromWallet_txt, "PaymentRequest", new { cardOption = "FromWallet" }, new { @class = "btn btn-primary btn-ok button-width-large" })
+                                        </div>
+                                        <div>
+                                            @StringResources.PaymentMethod_FromWallet_Description_txt
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    if (Model.CardOption != GCServices.ConsumerPortal.UI.Models.CardOption.None)
+                    {
+                        <div class="form-group" id="EmailOption">
+                            <div class="col-sm-12">
+                                <hr class="hr-visible" />
+                            </div>
+                            <div>
+                                <div class="col-sm-12"><span class="input-group-title">@StringResources.PaymentRequest_Email_txt</span><span> @StringResources.PaymentRequest_EReceiptOnly_txt</span></div>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            @Html.LabelFor(m => m.Email, new { @class = "col-sm-3 control-label" })
+                                            <div class="col-sm-9">
+                                                @Html.TextBoxFor(m => m.Email, Model.IsEmailAddressDeclined ? (object)new { @class = "form-control", autocomplete = "off", disabled = "true", type = "email" } : new { @class = "form-control", autocomplete = "off", type = "email" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            @Html.LabelFor(m => m.ConfirmEmail, new { @class = "col-sm-3 control-label" })
+                                            <div class="col-sm-9">
+                                                @Html.TextBoxFor(m => m.ConfirmEmail, Model.IsEmailAddressDeclined ? (object)new { @class = "form-control", autocomplete = "off", disabled = "true", type = "email" } : new { @class = "form-control", autocomplete = "off", type = "email" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="col-xs-12 form-checkbox">
+                                            @Html.CheckBoxFor(m => m.IsEmailAddressDeclined) @StringResources.PaymentRequest_NoEmail_checkbox
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="col-sm-12 text-right">
+                                        <img src="/Content/Images/transparent-logo-visa.png" class="img" alt="Credit Card Logo" width="200">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <hr class="hr-visible" />
+                            </div>
+                            <div class="col-sm-12">
+                                <p>
+                                    @StringResources.PaymentRequest_Browser1_txt
+                                    @StringResources.PaymentRequest_Browser2_txt
+                                </p>
+                                <p>
+                                    <b>@StringResources.PaymentRequest_PaymentAuthorization_txt</b><br />
+                                    <b>@StringResources.PaymentRequest_PleaseRead_txt</b> @StringResources.PaymentRequest_PaymentAuthoriztionLegalStatement_txt
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @if (!Model.IsOneTimePayment)
+                            {
+                                <div class="col-sm-offset-1 col-sm-10 col-xs-12 margin-top-10 btn-group">
+                                    <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                        <input name="cancel" type="button" value="@StringResources.PaymentRequest_Cancel_button" class="btn btn-default btn-cancel button-width-large" onclick="location.href = '@Url.Action("MakeAPayment", "Home")'" />
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                        <input type="reset" class="btn btn-default btn-cancel button-width-large" value="@StringResources.PaymentRequest_ResetForm_button" />
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                        <input type="submit" id="submit-button" value="@StringResources.PaymentRequest_SubmitPayment_button" class="btn btn-primary btn-ok button-width-large" />
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-sm-offset-3 col-sm-6 col-xs-12 margin-top-10 btn-group">
+                                    <div class="col-sm-6 col-xs-12 center-align margin-top-10">
+                                        <input type="reset" class="btn btn-default btn-cancel button-width-large" value="@StringResources.PaymentRequest_ResetForm_button" />
+                                    </div>
+                                    <div class="col-sm-6 col-xs-12 center-align margin-top-10">
+                                        <input type="submit" id="submit-button" value="@StringResources.PaymentRequest_SubmitPayment_button" class="btn btn-primary btn-ok button-width-large" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                }
+            </section>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.NewCard)
+    {
+        <script src="~/Scripts/App/NewCard.js"></script>
+    }
+    <script src="~/Scripts/App/PaymentRequest.js"></script>
+}

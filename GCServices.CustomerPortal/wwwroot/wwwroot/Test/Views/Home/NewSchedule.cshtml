@@ -1,0 +1,305 @@
+﻿@using GCServices.Treasury.Eps.Service.Agent
+@model GCServices.ConsumerPortal.UI.Models.PaymentScheduleViewModel
+
+@functions {
+    public string GetPaymentFrequencyDisplayText(PaymentFrequency paymentFrequency)
+    {
+        string text = string.Empty;
+        switch (paymentFrequency)
+        {
+            case PaymentFrequency.Weekly:
+                text = StringResources.NewSchedule_PaymentFrequencyWeekly_txt;
+                break;
+            case PaymentFrequency.BiWeekly:
+                text = StringResources.NewSchedule_PaymentFrequencyBiWeekly_txt;
+                break;
+            case PaymentFrequency.Monthly:
+                text = StringResources.NewSchedule_PaymentFrequencyMonthly_txt;
+                break;
+            case PaymentFrequency.LastDayOfMonth:
+                text = StringResources.NewSchedule_PaymentFrequencyLastDayOfMonth_txt;
+                break;
+            case PaymentFrequency.Quarterly:
+                text = StringResources.NewSchedule_PaymentFrequencyQuarterly_txt;
+                break;
+            case PaymentFrequency.SemiMonthly:
+                text = StringResources.NewSchedule_PaymentFrequencySemiMonthly_txt;
+                break;
+        }
+
+        return text;
+    }
+}
+
+@{
+    ViewBag.Title = StringResources.NewSchedule_VBT;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+
+    string maxPaymentCountErrorMsg = string.Format(System.Globalization.CultureInfo.InvariantCulture, StringResources.NewSchedule_MaxPaymentCount_Error_Format_String, Model.MaxPaymentCount);
+    string settlementOfferLink = string.Format(System.Globalization.CultureInfo.InvariantCulture, StringResources.SettlementOffer_Link, "NewSchedule");
+    var grid = new WebGrid(Model.PaymentArrangement.ScheduledPayments, defaultSort: "PaymentDate", selectionFieldName: "selectedRow", ajaxUpdateContainerId: "gridContent", rowsPerPage: 5000);
+
+    var paymentFrequencyList = new SelectList(
+        (from i in Enum.GetValues(typeof(PaymentFrequency)).Cast<PaymentFrequency>()
+         select new SelectListItem { Value = i.ToString(), Text = GetPaymentFrequencyDisplayText(i) }).ToList(),
+        "Value",
+        "Text");
+}
+
+<script>
+    var Resources = {
+        NewScheduleJs_CannotUpdatePaymentSchedule_alert: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_CannotUpdatePaymentSchedule_alert))",
+        NewScheduleJs_Disregard_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_Disregard_txt))",
+        NewScheduleJs_MaxPayment_alert: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_MaxPayment_alert))",
+        NewScheduleJs_MaxPayment_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_MaxPayment_txt))",
+        NewScheduleJs_MinPayment_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_MinPayment_txt))",
+    };
+
+    function checkChange() {
+        var isPaymentArrangementChanged = $("#PaymentArrangement_ScheduledPayments").val() !== "";
+        if (isPaymentArrangementChanged) {
+            if (!confirm('@Html.Raw(StringResources.NewScheduleJs_Disregard_txt)')) {
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.HasSettlementOffer && Model.ClientAllowsSettlement)
+        {
+            <div class="text-danger">
+                @Html.Raw(settlementOfferLink)
+            </div>
+        }
+
+        <div>
+            <section>
+                @using (Html.BeginForm("NewSchedule", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "createScheduleForm", name = "createScheduleForm" }))
+                {
+                    @Html.HiddenFor(m => m.MinAmountDue)
+                    @Html.HiddenFor(m => m.MaxAmountDue)
+                    <div class="col-xs-12">
+                        <div class="col-xs-12">@Html.ValidationMessageFor(m => m.PaymentArrangement.PaymentAmount, "", new { @class = "text-danger" })</div>
+                        <div class="col-xs-12">@Html.ValidationMessageFor(m => m.PaymentCount, "", new { @class = "text-danger" })</div>
+                        <div class="col-xs-12">@Html.ValidationMessageFor(m => m.SelectedCardId, "", new { @class = "text-danger" })</div>
+                    </div>
+
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <div class="col-xs-12 col-sm-4 col-md-3">
+                                <div>
+                                    @StringResources.NewSchedule_PaymentAmount_txt
+                                </div>
+                                <div>
+                                    @Html.TextBoxFor(m => m.PaymentArrangement.PaymentAmount, new { @class = "form-control", autocomplete = "off", maxlength = 7, id = "PaymentAmount", type = "text", oninput = "onAmountInput(this)" })
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="col-xs-12 col-sm-4 col-md-3 margin-top-10">
+                                <div>
+                                    @StringResources.NewSchedule_Frequency_txt
+                                </div>
+                                <div>
+                                    @Html.DropDownListFor(m => m.PaymentArrangement.PaymentFrequency, paymentFrequencyList, new { @class = "form-control", id = "PaymentFrequency" })
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-4 col-md-3 margin-top-10" ">
+                                <div>
+                                    @StringResources.NewSchedule_StartDate_txt
+                                </div>
+                                <div>
+                                    @Html.TextBoxFor(m => m.PaymentArrangement.StartDate, "{0:d}", new { @class = "form-control datepick", id = "StartDate", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-sm-4 col-md-3 margin-top-10" ">
+                                <div>
+                                    @StringResources.NewSchedule_NumberOfPayments_txt
+                                </div>
+                                <div>
+                                    @Html.TextBoxFor(m => m.PaymentCount, new { @class = "form-control", autocomplete = "off", maxlength = 2, id = "PaymentCount", type = "number", data_val_range_max = Model.MaxPaymentCount, data_val_range = maxPaymentCountErrorMsg, oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group margin-top-20">
+                        <div class="col-xs-12">
+                            <div class="col-xs-12 input-group-title">
+                                @StringResources.NewSchedule_PaymentMethod_txt
+                            </div>
+                            @if (Model.CardFlag == "C")
+                            {
+                                <div class="col-xs-12">@StringResources.Cards_CreditOnly_txt</div>
+                            }
+                            else if (Model.CardFlag == "D")
+                            {
+                                <div class="col-xs-12">@StringResources.Cards_DebitOnly_txt</div>
+                            }
+                        </div>
+                        <div class="col-xs-12">
+                            @foreach (var card in Model.ValidPaymentCards)
+                            {
+                                <div class="col-xs-12">
+                                    @Html.RadioButtonFor(m => m.SelectedCardId, card.CreditCardId)
+                                    @if (card.Type == CreditCardType.Visa)
+                                    {
+                                        <img src="/Content/Images/visa-icon.png" height=30 alt="Visa"><label class="margin-left-20 payment-method-label">@StringResources.UpdateWallet_Visa_label</label>
+                                    }
+                                    else
+                                    {
+                                        <img src="/Content/Images/mastercard-icon.png" height=30 alt="MasterCard"><label class="margin-left-20 payment-method-label">@StringResources.UpdateWallet_MasterCard_label</label>
+                                    }
+                                    <label class="payment-method-label">@StringResources.UpdateWallet_EndingIn_label @card.Number.Substring(card.Number.Length - 4)</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-12">
+                                <h4>@Html.ActionLink(@StringResources.NewSchedule_AddNewCard_txt, "AddNewCard")</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group margin-top-20">
+                        <div class="col-xs-12">
+                            <div class="col-xs-12">
+                                <div id="ButtonsForRefresh">
+                                    <div @(Model.CreateScheduleIsEnabled ? "" : "class=mytooltip")>
+                                        <input type="submit" name="createButton" id="createButton" value="@StringResources.NewSchedule_CreateSchedule_button" class="btn btn-primary btn-ok" @(Model.CreateScheduleIsEnabled ? "" : "disabled") />
+                                        <span class="tooltiptext">@StringResources.NewSchedule_CreateScheduleToolTip_txt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+            <section>
+                @using (Html.BeginForm("NewSchedule", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "newScheduleForm", name = "newScheduleForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.PaymentArrangement.ScheduledPayments)
+                    @Html.HiddenFor(m => m.AmountDue)
+
+                    if (Model.PaymentArrangement.ScheduledPayments != null && Model.PaymentArrangement.ScheduledPayments.Length > 0)
+                    {
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <div class="col-xs-12 input-group-title">
+                                    @StringResources.NewSchedule_PaymentSchedule_txt
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div>
+                                        @grid.GetHtml(htmlAttributes: new { id = "NewPaymentScheduleTable" },
+                                        tableStyle: "webGrid table schedule-table",
+                                        headerStyle: "header",
+                                        alternatingRowStyle: "alt",
+                                        selectedRowStyle: "select",
+                                        columns: grid.Columns(
+                                            grid.Column(null, null, @<text><input type="hidden" id="AgencyTrackingId" value="@item.AgencyTrackingId" /></text>, style: "Zero"),
+grid.Column("PaymentDate", StringResources.NewSchedule_PaymentSchedulePaymentDate_gridcol, @<text><span class="display-mode"><label id="lblPaymentDate">@item.PaymentDate.ToString("MM/dd/yyyy")</label></span>
+<input type="text" readonly name="PaymentDate" value="@item.PaymentDate.ToString("d")" class="edit-mode datepick form-control" /></text>, style: "Large"),
+grid.Column("PaymentAmount", StringResources.NewSchedule_PaymentSchedulePaymentAmount_gridcol, @<text><span class="display-mode"><label id="lblPaymentAmount">@item.PaymentAmount.ToString("C2")</label></span>
+<input type="text" id="PaymentAmount" value="@item.PaymentAmount" class="edit-mode form-control" maxlength=7 oninput="onAmountInput(this)" /></text>, style: "Large"),
+grid.Column("CreditCard", StringResources.NewSchedule_PaymentScheduleCard_gridcol, @<text><span class="display-mode"><label id="lblCreditCard">@item.CreditCard.Type @StringResources.HomeController_GetCreditCards__Card_ending_in @item.CreditCard.Number.Substring(item.CreditCard.Number.Length - 4)</label></span>
+@Html.DropDownListFor(m => m.PaymentCardsViewModel.SelectedCreditCardId, new SelectList(Model.PaymentCardsViewModel.PaymentCards, "Id", "DisplayNumber", Model.PaymentCardsViewModel.SelectedCreditCardId = item.CreditCard.CreditCardId), new { @class = "edit-mode form-control", id = "CreditCard" }) </text>, style: "Large"),
+
+grid.Column("Action", StringResources.NewSchedule_PaymentScheduleAction_gridcol, format: @<text>
+    <button type="button" class="btn btn-xs btn-primary edit-user display-mode">@StringResources.NewSchedule_PaymentScheduleEdit_button</button>
+    <button type="button" class="btn btn-xs btn-primary save-user edit-mode">@StringResources.NewSchedule_PaymentScheduleSave_button</button>
+    <button type="button" class="btn btn-xs btn-cancel cancel-user edit-mode">@StringResources.NewSchedule_PaymentScheduleCancel_button</button>
+</text>, canSort: false, style: "Medium")
+))
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <p>@Html.CheckBoxFor(m => m.IsAgreed, new { id = "AgreeCheckBox" }) @StringResources.NewSchedule_PaymentScheduleTerms_checkbox <a href="javascript: void(0)" data-toggle="modal" data-target="#termsAndConditionsModal">@StringResources.NewSchedule_PaymentScheduleTerms1_txt</a>.</p>
+                                    <p>@StringResources.NewSchedule_PaymentScheduleTerms2_txt</p>
+                                    <p>@StringResources.NewSchedule_PaymentScheduleTerms3_txt</p>
+                                    <p>@StringResources.RefundRequestDisclosure_txt</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-10 col-xs-12 margin-top-10 btn-group">
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                <input type="submit" name="cancelButton" id="cancelButton" value="@StringResources.NewSchedule_Cancel_button" class="btn btn-default btn-cancel button-width-large" onclick="return checkChange();" />
+                            </div>
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                <input type="submit" name="resetButton" id="resetButton" value="@StringResources.NewSchedule_Reset_button" class="btn btn-default btn-cancel button-width-large" onclick="return checkChange();" />
+                            </div>
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                <div id="submitButtonToolTip" class="mytooltip" )>
+                                    <input type="submit" name="submitButton" id="submitButton" value="@StringResources.NewSchedule_Submit_button" class="btn btn-primary btn-ok button-width-large" disabled />
+                                    @if (Model.PaymentArrangement.ScheduledPayments != null && Model.PaymentArrangement.ScheduledPayments.Length > 0)
+                                    {
+                                        <span class="tooltiptext">@StringResources.NewSchedule_AgreeToolTip_txt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tooltiptext">@StringResources.NewSchedule_PayScheduleCreateToolTip_txt</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+
+
+        </div>
+    </div>
+</div>
+
+@if (Model.ShowMaxPayDateMessage)
+{
+    @Html.Partial("MaxPayDateMessage")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/App/Common.js"></script>
+    <script src="~/Scripts/App/scroll-sneak.js"></script>
+    <script src="~/Scripts/App/NewSchedule.js"></script>
+}

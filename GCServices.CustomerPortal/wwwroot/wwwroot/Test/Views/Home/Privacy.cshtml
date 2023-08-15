@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = StringResources.Privacy_VBT;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    ViewBag.HideLogout = true;
+
+    string contactUsUrl = System.Configuration.ConfigurationManager.AppSettings["ContactUsUrl"];
+    string localizedName = string.Empty;
+    string lang = (string)this.ViewContext.RouteData.Values["lang"];
+    if (lang != null)
+    {
+        string langHome = String.Format(System.Globalization.CultureInfo.InvariantCulture, "/{0}/Home", lang);
+        contactUsUrl = contactUsUrl.Replace("/Home", langHome);
+        localizedName = lang.StartsWith("es", StringComparison.OrdinalIgnoreCase) ? "_es" : string.Empty;
+    }
+
+    ViewBag.ContactUsRequestCacpaUrl = contactUsUrl + "?ccpa=true"; // Only show CCPA contact options
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="privacy-box">
+                    @Html.Partial("PrivacyStatement" + localizedName)
+                </div>
+            </div>
+        </div>
+    </div>   
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/Privacy.js"></script>
+}

@@ -1,0 +1,119 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.PaymentRequestViewModel
+@{
+    ViewBag.Title = StringResources.PaymentSummary_VBT;
+    ViewBag.BackgroundClass = "background-image-payment-review";
+}
+
+<div>
+    <div>
+        <h1 class="right-title-dark">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-sm-12">
+                <p>
+                    @Html.DisplayFor(m => m.Name) <br />
+                    @Html.DisplayFor(m => m.GcNumber)
+                </p>
+                <p>
+                    @StringResources.PaymentSummary_BalanceDue_txt @Html.DisplayFor(m => m.AmountDue) <br />
+                    @StringResources.PaymentSummary_TotalAmount_txt @Html.DisplayFor(m => m.PaymentAmount) <br />
+                </p>
+
+                @if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.FromWallet)
+                {
+                    @Html.DisplayFor(m => m.CardFromWallet)
+                }
+                else if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.NewCard)
+                {
+                    @Html.DisplayFor(m => m.NewCard)
+                }
+                <p id="EmailOption">
+                    @StringResources.PaymentSummary_Email_txt @Html.DisplayTextFor(m => m.Email) <br />
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <hr />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <section id="paymentSummaryForm">
+                    @using (Html.BeginForm("PaymentSummary", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Name)
+                        @Html.HiddenFor(m => m.GcNumber)
+                        @Html.HiddenFor(m => m.ClientAccountNumber)
+                        @Html.HiddenFor(m => m.AmountDue)
+                        @Html.HiddenFor(m => m.MinAmountDue)
+                        @Html.HiddenFor(m => m.MaxAmountDue)
+                        @Html.HiddenFor(m => m.MinimumAllowedAmount)
+                        @Html.HiddenFor(m => m.OfficeCode)
+                        @Html.HiddenFor(m => m.CardFlag)
+                        @Html.HiddenFor(m => m.CardOption)
+                        @Html.HiddenFor(m => m.MasterClientIdentifier)
+                        @Html.HiddenFor(m => m.BusinessEntityCode)
+                        @Html.HiddenFor(m => m.ClientBillingName)
+                        @Html.HiddenFor(m => m.StarFileNumber)
+                        @Html.HiddenFor(m => m.PaymentAmount)
+                        @Html.HiddenFor(m => m.IsEmailAddressDeclined)
+                        @Html.HiddenFor(m => m.Email)
+                        @Html.HiddenFor(m => m.ConfirmEmail)
+                        @Html.HiddenFor(m => m.IsOneTimePayment)
+                        @Html.HiddenFor(m => m.IsNewSchedule)
+                        @Html.HiddenFor(m => m.PaymentArrangementMarkedToBeDeleted)
+
+                        if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.FromWallet)
+                        {
+                            @Html.HiddenFor(m => m.CardFromWallet.SelectedCardId)
+
+                        }
+                        else if (Model.CardOption == GCServices.ConsumerPortal.UI.Models.CardOption.NewCard)
+                        {
+                            @Html.HiddenFor(m => m.NewCard.Card)
+                            @Html.HiddenFor(m => m.NewCard.CardFlag)
+                            @Html.HiddenFor(m => m.NewCard.CardNumber)
+                            @Html.HiddenFor(m => m.NewCard.ExpirationMonth)
+                            @Html.HiddenFor(m => m.NewCard.ExpirationYear)
+                            @Html.HiddenFor(m => m.NewCard.Cvv)
+                            @Html.HiddenFor(m => m.NewCard.NameOnCard)
+                            @Html.HiddenFor(m => m.NewCard.PhoneNumber)
+                            @Html.HiddenFor(m => m.NewCard.Address)
+                            @Html.HiddenFor(m => m.NewCard.City)
+                            @Html.HiddenFor(m => m.NewCard.State)
+                            @Html.HiddenFor(m => m.NewCard.Zipcode)
+                            @Html.HiddenFor(m => m.NewCard.IsBillingAddressSame)
+                            @Html.HiddenFor(m => m.NewCard.BillingAddress)
+                            @Html.HiddenFor(m => m.NewCard.BillingCity)
+                            @Html.HiddenFor(m => m.NewCard.BillingState)
+                            @Html.HiddenFor(m => m.NewCard.BillingZipcode)
+                        }
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-6 col-xs-12 margin-top-10 btn-group">
+                                <div class="col-sm-6 col-xs-12 center-align margin-top-10">
+                                    <input type="submit" id="editButton" name="editButton" value="@StringResources.PaymentSummary_Edit_button" class="btn btn-default btn-cancel button-width-large" />
+                                </div>
+                                <div class="col-sm-6 col-xs-12 center-align margin-top-10">
+                                    <input type="submit" id="submitButton" name="submitButton" value="@StringResources.PaymentSummary_Submit_button" class="btn btn-primary btn-ok button-width-large" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/PaymentSummary.js"></script>
+}

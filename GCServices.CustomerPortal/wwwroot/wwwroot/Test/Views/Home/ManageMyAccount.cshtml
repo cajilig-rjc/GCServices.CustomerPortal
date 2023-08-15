@@ -1,0 +1,173 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.LoginViewModel
+@{
+    ViewBag.Title = StringResources.ManageMyAccount_cshtml_Execute_MANAGE_MY_ACCOUNT;
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+
+    var hasBankUpdateButton = Model.ClientPermissionSettings.ClientAllowBankUpdate && !string.IsNullOrEmpty(Model.BankRoutingNumber) && !string.IsNullOrEmpty(Model.BankAccountNumber);
+
+    int buttonCount = 1 +
+        (Model.HasSpecialOffers ? 1 : 0) +
+        (Model.ClientPermissionSettings.ClientAllowDemographicUpdates ? 1 : 0) +
+        (hasBankUpdateButton ? 1 : 0) +
+        (Model.ClientPermissionSettings.ClientAllowDemographicBankruptcyUpdates ? 1 : 0);
+
+    string columnClass = buttonCount == 4 ? "col-sm-6" : "col-sm-4";
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="row">
+        <div id="note">
+            @ViewBag.Message
+        </div>
+    </div>
+}
+
+<div>
+    <div>
+        <h1 class="left-title">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                </div>
+                <div class="col-sm-6 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row margin-top-20 margin-bottom-50">
+            <div class=@columnClass>
+                @if (Model.EnrolledInBlockingOffers)
+                {
+                    <a href="javascript: void(0)" data-toggle="modal" data-target="#enrolledInBlockingOffersModal" class="home-component-action">
+                        <div class="home-component make-payment">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Make_a_Payment</h2>
+                            </div>
+                        </div>
+                    </a>
+                }
+                else if (Model.NsfFlag && Model.IsNewSchedule)
+                {
+                    <a href="javascript: void(0)" data-toggle="modal" data-target="#hasNsfFlag" class="home-component-action">
+                        <div class="home-component make-payment">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Make_a_Payment</h2>
+                            </div>
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <a href='@Url.Action("MakeAPayment", "Home")' class="home-component-action">
+                        <div class="home-component make-payment">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Make_a_Payment</h2>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+
+            @if (Model.HasSpecialOffers)
+            {
+                <div class=@columnClass>
+                    <a href='@Url.Action("SpecialOffers", "Home")' class="home-component-action">
+                        <div class="home-component special-offers">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Special_Offers</h2>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (Model.ClientPermissionSettings.ClientAllowDemographicUpdates)
+            {
+                <div class=@columnClass>
+                    <a href='@Url.Action("UpdateProfile", "Home")' class="home-component-action">
+                        <div class="home-component update-profile">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Update_Profile_Information</h2>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (hasBankUpdateButton)
+            {
+                <div class=@columnClass>
+                    <a href='@Url.Action("ManageBankInfo", "Home")' class="home-component-action">
+                        <div class="home-component update-bank-info">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_Update_Bank_Information</h2>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (Model.ClientPermissionSettings.ClientAllowDemographicBankruptcyUpdates)
+            {
+                <div class=@columnClass>
+                    <a href='@Url.Action("UpdateBankruptcyInfo", "Home")' class="home-component-action">
+                        <div class="home-component bankruptcy-info">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.ManageMyAccount_cshtml_Execute_Enter_Bankruptcy_Information</h2>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="enrolledInBlockingOffersModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-body">
+                <div>@StringResources.EnrolledInBlockingOffers_1_txt @ViewBag.PhoneNumber @StringResources.EnrolledInBlockingOffers_2_txt</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="hasNsfFlag" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-body">
+                <div>@StringResources.HasNsfFlag_1_txt @ViewBag.PhoneNumber @StringResources.HasNsfFlag_2_txt</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/UserAgreement.js"></script>
+}
+

@@ -1,0 +1,92 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.SpecialOfferProgramInfoViewModel
+
+<!--Beginning of Special Offer A -->
+<div class="special-offers-section">
+
+    <div class="special-offers-banner">
+
+        <div class="special-offers-title">@StringResources.SpecialOffers_Offer_A_Title</div>
+        <div class="special-offers-btn">
+            <button type="button" data-toggle="modal" data-target="#offerA" class="btn btn-light">@StringResources.SpecialOffers_Accept_Program</button>
+        </div>
+    </div>
+
+    <div class="special-offers-terms">
+        <p><b>@StringResources.SpecialOffers_Offer_A_1</b></p>
+
+        <p>@StringResources.SpecialOffers_Offer_A_2</p>
+        <p>@StringResources.SpecialOffers_Offer_A_3</p>
+
+        <p><b>@StringResources.SpecialOffers_Offer_A_Eligibility</b></p>
+
+        <p>
+            <ul>
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_1_1@StringResources.SpecialOffers_Offer_A_Eligibility_1_3</li>
+
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_2</li>
+
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_3</li>
+
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_4</li>
+
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_5</li>
+
+                <li>@StringResources.SpecialOffers_Offer_A_Eligibility_6</li>
+            </ul>
+        </p>
+
+        <p>@StringResources.SpecialOffers_Offer_A_4</p>
+
+    </div>
+</div>
+<!--End of Special Offer A -->
+<!-- Modal Offer A Part 1-->
+<div class="modal fade" id="offerA" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <p><b>@StringResources.SpecialOffers_Modal_Offer_A_1</b></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">@StringResources.SpecialOffers_Return_to_Special_Offer</button>
+                <button type="button" data-toggle="modal" data-dismiss="modal" data-target="#offerA2" class="btn btn-light">@StringResources.SpecialOffers_Accept_Offer</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Offer A Part 2-->
+<div class="modal fade" id="offerA2" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            @using (Html.BeginForm("SpecialOffers", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "specialOfferBForm", name = "specialOfferBForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body ">
+                    <p><b>@StringResources.SpecialOffers_Modal_Offer_A_2</b></p>
+                    <p class="modal-datepicker">Date: @Html.TextBoxFor(m => m.EstimatedPIF, "{0:d}", new { @class = "datepick" }) </p>
+                </div>
+                <div class="modal-footer">
+                    <div id="ButtonsForRefresh">
+                        <input type="hidden" id="ProgramId" name="ProgramId" value="REI" />
+                        <button type="button" class="btn btn-primary btn-ok button-width-large margin-right-20" data-dismiss="modal">@StringResources.SpecialOffers_Decline</button>
+                        <input type="submit" value="@StringResources.SpecialOffers_Accept" class="btn btn-primary btn-ok button-width-large" @(Model.CanAcceptOffer ? "" : "disabled") />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- End of Modal Offer A -->

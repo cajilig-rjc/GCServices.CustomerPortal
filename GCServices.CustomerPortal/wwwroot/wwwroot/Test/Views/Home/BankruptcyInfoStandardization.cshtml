@@ -1,0 +1,159 @@
+﻿@using GCServices.ConsumerPortal.UI
+@using GCServices.ConsumerPortal.UI.Models
+@model Tuple<BankruptcyInfoViewModel, BankruptcyInfoViewModel>
+@{
+    ViewBag.Title = StringResources.AddressStandardization_cshtml_Execute_ADDRESS_STANDARDIZATION;
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="right-title">@ViewBag.Title</h1>
+        <div class="white-box">
+            <div class="row padding-left-right-dynamic">
+                <div class="col-xs-12">
+                    <h3>@StringResources.BankruptcyInfoStandardization_cshtml_Execute_Bankruptcy_Info_Standardization_small</h3>
+                </div>
+                <div class="col-sm-6 col-xs-12">
+                    <div class="col-sm-12">
+                        <div class="col-xs-12">
+                            <h4>@StringResources.BankruptcyInfoStandardization_cshtml_Execute_Standardized_Input</h4>
+                        </div>
+                        <div class="form-group form-horizontal">
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.AttorneyAddress, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.AttorneyAddress)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.AttorneyCity, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.AttorneyCity)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.AttorneyState, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.AttorneyState)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.AttorneyZipcode, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.AttorneyZipcode)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.TrusteeAddress, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.TrusteeAddress)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.TrusteeCity, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.TrusteeCity)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.TrusteeState, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.TrusteeState)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item2.TrusteeZipcode, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item2.TrusteeZipcode)<br /></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @using (Html.BeginForm("BankruptcyInfoStandardization", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                <div class="col-sm-6 margin-top-20 margin-bottom-20">
+                                    <input name="standardizedInputButton" type="submit" value="@StringResources.BankruptcyInfoStandardization_cshtml_Execute_USE_STANDARDIZED_INPUT" class="btn btn-primary btn-ok" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xs-12">
+                    <div class="col-sm-12">
+                        <div class="col-xs-12">
+                            <h4>@StringResources.BankruptcyInfoStandardization_cshtml_Execute_Your_Input</h4>
+                        </div>
+                        <div class="form-group form-horizontal">
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.AttorneyAddress, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.AttorneyAddress)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.AttorneyCity, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.AttorneyCity)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.AttorneyState, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.AttorneyState)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.AttorneyZipcode, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.AttorneyZipcode)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.TrusteeAddress, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.TrusteeAddress)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.TrusteeCity, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.TrusteeCity)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.TrusteeState, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.TrusteeState)<br /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-xs-12">
+                                @Html.LabelFor(m => m.Item1.TrusteeZipcode, new { @class = "col-sm-4 control-label" })
+                                <div class="col-sm-8">
+                                    <p class="form-text">@Html.DisplayFor(m => m.Item1.TrusteeZipcode)<br /></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @using (Html.BeginForm("BankruptcyInfoStandardization", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form" }))
+                        {
+                            <div class="form-group">
+                                @Html.AntiForgeryToken()
+                                <div class="col-sm-6 margin-top-20 margin-bottom-20">
+                                    <input name="myInputButton" type="submit" value="@StringResources.BankruptcyInfoStandardization_cshtml_Execute_USE_MY_INPUT" class="btn btn-primary btn-ok" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/UpdateProfile.js"></script>
+}

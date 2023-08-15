@@ -1,0 +1,126 @@
+﻿@using System.Configuration;
+
+@{
+    if (ViewBag.IsStudentLoan == true)
+    {
+        ViewBag.Title = StringResources.DOE_VBT_StudentLoan;
+    }
+    else
+    {
+        ViewBag.Title = StringResources.DOE_VBT_DOE;
+    }
+
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    ViewBag.HideLogout = true;
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-sm-12">
+                @if (!ViewBag.IsStudentLoan)
+                {
+                    <h2>@StringResources.DOE_VBT_StudentLoan_Prompt_div</h2>
+                }
+                else
+                {
+                    <h2>@StringResources.DOE_VBT_DOE_Prompt_div</h2>
+                }
+            </div>
+
+        </div>
+
+        <div class="row margin-top-30">
+            <div class="col-sm-12">
+                <div class="col-md-4 ed-compnent-container">
+                    <div class="ed-component">
+                        <div class="ed-component-top make-student-payment">
+                            <div class="align-self-end">
+                                <img class="image-description-left" src="/Content/Images/make-student-payment-symbol.png" />
+                                @if (!ViewBag.IsStudentLoan)
+                                {
+                                    <div class="image-description-right">@StringResources.DOE_DOE_ImageDescr_div</div>
+                                }
+                                else
+                                {
+                                    <div class="image-description-right">@StringResources.DOE_StudentLoan_ImageDescr_div</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="ed-component-middle">
+                            <hr class="ed-line" />
+                            @if (!ViewBag.IsStudentLoan)
+                            {
+                                @StringResources.DOE_DOE_Pay_div
+                            }
+                            else
+                            {
+                                @StringResources.DOE_StudentLoan_Pay_div
+                             }
+                        </div>
+                        <div>
+                            @if (!ViewBag.IsStudentLoan)
+                            {
+                                <a class="btn btn-dark ed-link" role="button" href="https://www.pay.gov/public/home" target="_blank">@StringResources.DOE_Pay_button <img src="~/Content/Images/open-link.png" /></a>
+                            }
+                            else
+                            {
+                                @Html.ActionLink(StringResources.DOE_Pay_button + " »", "UserAgreement", "Home", null, new { @class = "btn btn-dark ed-link" })
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 ed-compnent-container">
+                    <div class="ed-component">
+                        <div class="ed-component-top student-loan-dashboard">
+                            <div class="align-self-end">
+                                <img class="image-description-left" src="~/Content/Images/student-symbol.png" />
+                                <div class="image-description-right">@StringResources.DOE_StudentLoanDashboard_div</div>
+                            </div>
+                        </div>
+                        <div class="ed-component-middle">
+                            <hr class="ed-line" />@StringResources.DOE_StudentLoanDashboard_Prompt_div
+                        </div>
+                        <div>
+                            <a class="btn btn-dark ed-link" role="button" href='@ConfigurationManager.AppSettings["StudentLoansUrl"]' target="_blank">@StringResources.DOE_StudentLoanDashboard_button &raquo;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 ed-compnent-container">
+                    <div class="ed-component">
+                        <div class="ed-component-top student-loan-documents">
+                            <div class="align-self-end">
+                                <img class="image-description-left" src="~/Content/Images/student-loan-documents-symbol.png" />
+                                <div class="image-description-right">@StringResources.DOE_StudentLoanDocs_div</div>
+                            </div>
+                        </div>
+                        <div class="ed-component-middle">
+                            <hr class="ed-line" />@StringResources.DOE_StudentLoanDocs_Prompt_div
+                        </div>
+                        <div>
+                            <a class="btn btn-dark ed-link" role="button" href='@ConfigurationManager.AppSettings["GCSProgramUrl"]' target="_blank">@StringResources.DOE_StudentLoanDocs_button &raquo;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>       
+
+    </div>
+</div>
+
+@section Scripts {
+@Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $("body").show();
+    });
+
+</script>
+}

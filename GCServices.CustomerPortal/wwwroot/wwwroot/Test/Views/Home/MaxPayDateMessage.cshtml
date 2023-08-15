@@ -1,0 +1,35 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@{
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+    var paymentScheduleViewModel = Session["PaymentScheduleViewModel"] as PaymentScheduleViewModel;
+    ViewBag.MaxPayDate = paymentScheduleViewModel != null && paymentScheduleViewModel.MaxPayDate.HasValue ?
+        paymentScheduleViewModel.MaxPayDate.Value.ToShortDateString() : string.Empty;
+    string contactUsUrl = System.Configuration.ConfigurationManager.AppSettings["ContactUsUrl"];
+    string lang = (string)this.ViewContext.RouteData.Values["lang"];
+    if (lang != null)
+    {
+        string langHome = String.Format(System.Globalization.CultureInfo.InvariantCulture, "/{0}/Home", lang);
+        contactUsUrl = contactUsUrl.Replace("/Home", langHome);
+    }
+}
+
+<div id="maxPayDateModal" class="modal fade" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>@StringResources.MaxPayDate_1_1_txt @ViewBag.MaxPayDate.</div>
+                <div>@StringResources.Layout_PleaseContact_1_txt @ViewBag.PhoneNumber @StringResources.Layout_PleaseContact_2_txt <a href='@contactUsUrl'>@StringResources.Layout_PleaseContact_3_txt</a> @StringResources.Layout_PleaseContact_4_txt</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>

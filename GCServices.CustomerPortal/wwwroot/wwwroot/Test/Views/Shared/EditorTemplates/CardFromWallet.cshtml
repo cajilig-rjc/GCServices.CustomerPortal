@@ -1,0 +1,33 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.CardFromWallet
+
+
+<div class="form-group">
+    <div>@Html.ValidationMessageFor(m => m.SelectedCardId, "", new { @class = "text-danger" })</div>
+</div>
+
+<div class="form-group">
+    <div class="col-xs-12">
+        @foreach (var card in Model.ValidPaymentCards)
+        {
+            <div class="col-xs-12">
+                @Html.RadioButtonFor(m => m.SelectedCardId, card.CreditCardId)
+                @if (card.Type == GCServices.Treasury.Eps.Service.Agent.CreditCardType.Visa)
+                {
+                    <img src="/Content/Images/visa-icon.png" height=30 alt="Visa"><label class="margin-left-20 payment-method-label">@StringResources.UpdateWallet_Visa_label</label>
+                }
+                else
+                {
+                    <img src="/Content/Images/mastercard-icon.png" height=30 alt="MasterCard"><label class="margin-left-20 payment-method-label">@StringResources.UpdateWallet_MasterCard_label</label>
+                }
+                <label class="payment-method-label">@StringResources.UpdateWallet_EndingIn_label @card.Number.Substring(card.Number.Length - 4)</label>
+            </div>
+        }
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-12">
+            <h4>@Html.ActionLink(@StringResources.NewSchedule_AddNewCard_txt, "AddNewCard")</h4>
+        </div>
+    </div>
+</div>
+
+

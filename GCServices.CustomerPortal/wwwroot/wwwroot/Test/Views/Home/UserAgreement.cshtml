@@ -1,0 +1,81 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.LoginViewModel
+@{
+    ViewBag.Title = StringResources.UserAgreement_VBT;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    ViewBag.IsUserAgreement = true;
+
+    string actionAfterLogin = Session["ActionAfterLogin"] as string;
+    if (string.IsNullOrEmpty(actionAfterLogin))
+    {
+        actionAfterLogin = "ManageMyAccount";
+    }
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+            </div>
+            <div class="col-sm-6 align-dynamic">
+                <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+            </div>
+        </div>
+
+        <div class="agreement-content">
+            <div>@StringResources.UserAgreement_Requires_txt</div>
+            <br />
+            <div class="agreement-box">
+                <ol type="1" class="font10 spacedlist">
+                    <li>@StringResources.UserAgreement_Box1_txt</li>
+                    <li>@StringResources.UserAgreement_Box2_txt <a href="http://www.gcserv.com" target="_blank">www.gcserv.com</a> @StringResources.UserAgreement_Box2_1_txt <a href="http://www.ftc.gov" target="_blank">www.ftc.gov</a>@StringResources.UserAgreement_Box2_2_txt<a href="http://www.ftc.gov" target="_blank">www.ftc.gov</a>.</li>
+                    <li>@StringResources.UserAgreement_Box3_txt</li>
+                    <li>@StringResources.UserAgreement_Box4_txt</li>
+                    <li>@StringResources.UserAgreement_Box5_txt</li>
+                </ol>
+                <div class="font10 margin-left-40">
+                    <p><strong>@StringResources.UserAgreement_CA_1_1_txt </strong>@StringResources.UserAgreement_CA_1_2_txt <a href="http://www.ftc.gov/" target="_blank">www.ftc.gov.</a></p>
+                    <p><strong>@StringResources.UserAgreement_CO_1_1_txt </strong>@StringResources.UserAgreement_CO_1_2_txt <a href="http://www.coag.gov/CAR" target="_blank">WWW.COAG.GOV/CAR. </a>@StringResources.UserAgreement_CO_1_3_txt</p>
+                    <p><strong>@StringResources.UserAgreement_Maine_1_1_txt </strong>@StringResources.UserAgreement_Maine_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_Mass_1_1_txt </strong>@StringResources.UserAgreement_Mass_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_Minn_1_1_txt </strong>@StringResources.UserAgreement_Minn_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_NY_1_1_txt </strong>@StringResources.UserAgreement_NY_1_2_txt</p>
+                    <ol>
+                        <li>@StringResources.UserAgreement_NYItem1_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem2_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem3_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem4_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem5_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem6_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem7_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem8_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem9_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem10_txt</li>
+                        <li>@StringResources.UserAgreement_NYItem11_txt</li>
+                    </ol>
+                    <p><strong>@StringResources.UserAgreement_NYC_1_1_txt</strong></p>
+                    <p>@StringResources.UserAgreement_Offices_txt</p>
+                    <p><strong>@StringResources.UserAgreement_NC_1_1_txt </strong>@StringResources.UserAgreement_NC_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_TN_1_1_txt </strong>@StringResources.UserAgreement_TN_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_WA_1_1_txt </strong>@StringResources.UserAgreement_WA_1_2_txt</p>
+                    <p><strong>@StringResources.UserAgreement_WI_1_1_txt </strong>@StringResources.UserAgreement_WI_1_2_txt <a href="http://www.wdfi.org/" target="_blank">www.wdfi.org.</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row agreement-button-row">
+            <input type="button" value="@StringResources.UserAgreement_Disagree_button" class="btn btn-cancel margin-right-10" onclick="location.href = '@Url.Action("Logout", "Home")'" />
+            <input name="SubmitButton" type="button" value="@StringResources.UserAgreement_Agree_button" class="btn btn-primary btn-ok" onclick="location.href = '@Url.Action(actionAfterLogin, "Home")'" />
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/UserAgreement.js"></script>
+}

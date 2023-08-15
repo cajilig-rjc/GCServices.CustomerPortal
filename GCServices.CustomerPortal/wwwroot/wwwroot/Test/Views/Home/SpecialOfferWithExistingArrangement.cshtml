@@ -1,0 +1,49 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.LoginViewModel
+@{
+    ViewBag.Title = StringResources.SpecialOffers_cshtml_Execute_SPECIAL_OFFERS;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>@StringResources.SpecialOffers_Special_Offer_With_Existing_Arrangement_1_txt @ViewBag.PhoneNumber @StringResources.SpecialOffers_Special_Offer_With_Existing_Arrangement_2_txt</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/App/UserAgreement.js"></script>

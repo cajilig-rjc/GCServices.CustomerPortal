@@ -1,0 +1,25 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@{
+    ViewBag.Title = StringResources.UpdateProfile_Validation_Title;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>@StringResources.Unable_To_Complete_Secondary_Validation_txt @ViewBag.PhoneNumber.</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/App/UserAgreement.js"></script>

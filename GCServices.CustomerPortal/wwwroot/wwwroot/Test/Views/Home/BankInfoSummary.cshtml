@@ -1,0 +1,160 @@
+﻿@using GCServices.ConsumerPortal.UI
+@using GCServices.ConsumerPortal.UI.Models
+@model BankInfoViewModel
+@{
+    ViewBag.Title = StringResources.ManageBankInfo_Title;
+    ViewBag.BackgroundClass = "background-image-payment-review";
+
+    string nameColumnClass = "col-xs-12 col-sm-3";
+    string valueColumnClass = "col-xs-12 col-sm-9 font-weight-bold";
+}
+
+@functions{
+    public string GetAccountTypeDisplayName(BankAccountType? bankAccountType)
+    {
+        string text = string.Empty;
+        if (bankAccountType.HasValue)
+        {
+            switch (bankAccountType.Value)
+            {
+                case BankAccountType.Checking:
+                    text = StringResources.BankInfo_Checking;
+                    break;
+                case BankAccountType.Savings:
+                    text = StringResources.BankInfo_Savings;
+                    break;
+                case BankAccountType.Business:
+                    text = StringResources.BankInfo_Business;
+                    break;
+            }
+
+        }
+
+        return text;
+    }
+}
+
+<div>
+    <div>
+        <h1 class="right-title-dark">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                    <a href='@Url.Action("MakeAPayment", "Home")' class="btn btn-primary btn-ok margin-left-10">@StringResources.ManageMyAccount_cshtml_Execute_Make_a_Payment</a>
+                </div>
+                <div class="col-sm-6 col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row padding-left-right-dynamic">
+            @using (Html.BeginForm("BankInfoSummary", "Home", FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="margin-top-30 margin-bottom-10">
+                    <div>@StringResources.UpdateBankInfo_Verify</div>
+                </div>
+
+                <div>
+                    @Html.HiddenFor(m => m.Name)
+                    @Html.HiddenFor(m => m.GcNumber)
+                    @Html.HiddenFor(m => m.AmountDue)
+                    @Html.HiddenFor(m => m.AccountName)
+                    @Html.HiddenFor(m => m.Address)
+                    @Html.HiddenFor(m => m.City)
+                    @Html.HiddenFor(m => m.State)
+                    @Html.HiddenFor(m => m.Zipcode)
+                    @Html.HiddenFor(m => m.BankAccountType)
+                    @Html.HiddenFor(m => m.BankName)
+                    @Html.HiddenFor(m => m.RoutingNumber)
+                    @Html.HiddenFor(m => m.AccountNumber)
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_AccountType:</div>
+                        <div class="@valueColumnClass">@GetAccountTypeDisplayName(Model.BankAccountType)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_BankAccountName:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.AccountName)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_BankAddress:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.Address)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BillingCity_label:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.City)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BillingState_label:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.State)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.Zipcode_label:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.Zipcode)</div>
+                    </div>
+
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_BankName:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.BankName)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_RoutingNumber:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.RoutingNumber)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="@nameColumnClass">@StringResources.BankInfo_AccountNumber:</div>
+                        <div class="@valueColumnClass">@Html.DisplayFor(m => m.AccountNumber)</div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-5">
+                        <div class="col-xs-12 checkbox">
+                            <label><input type="checkbox" id="HasAgreement" name="HasAgreement" value="true"/>@StringResources.UpdateBankInfo_Agreement</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-6 col-xs-12 margin-top-10 btn-group">
+                        <div class="btn margin-top-10">
+                            <input type="button" id="editButton" value="@StringResources.BankInfo_Edit" class="btn btn-primary btn-ok" onclick="location.href = '@Url.Action("UpdateBankInfo", "Home")'" />
+                        </div>
+                        <div class="btn margin-top-10">
+                            <input type="submit" name="submitButton" value="@StringResources.Index_Submit_button" class="btn btn-primary btn-ok" />
+                        </div>
+                    </div>
+
+                    <div class="loader hidden" id="spinner"></div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/ShowContent.js"></script>
+    <script src="~/Scripts/App/BankInfoSummary.js"></script>
+}
+

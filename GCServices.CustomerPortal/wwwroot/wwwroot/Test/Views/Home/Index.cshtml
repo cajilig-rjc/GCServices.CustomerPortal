@@ -1,0 +1,145 @@
+﻿@using System.Configuration;
+
+@model GCServices.ConsumerPortal.UI.Models.IndexViewModel
+@{
+    ViewBag.Title = StringResources.Index_VBT;
+    ViewBag.BackgroundClass = "background-image-index";
+    ViewBag.HideLogout = true;
+    ViewBag.ShowLangSelection = true;
+
+    bool noRecaptcha = false;
+    bool.TryParse(ConfigurationManager.AppSettings["TurnOffRecaptcha"], out noRecaptcha);
+
+    string contactUsUrl = System.Configuration.ConfigurationManager.AppSettings["ContactUsUrl"];
+    string recaptchaUrl = "https://www.google.com/recaptcha/api.js?render=" + ViewBag.SiteKey;
+    string lang = (string)this.ViewContext.RouteData.Values["lang"];
+    bool isSpanish = false;
+    if (!string.IsNullOrEmpty(lang))
+    {
+        recaptchaUrl = "https://www.google.com/recaptcha/api.js?render=" + ViewBag.SiteKey + "&hl=" + lang;
+        isSpanish = lang.StartsWith("es");
+
+        string langHome = String.Format(System.Globalization.CultureInfo.InvariantCulture, "/{0}/Home", lang);
+        contactUsUrl = contactUsUrl.Replace("/Home", langHome);
+    }
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div>
+    <div class="mobile-only index-title text-center margin-top-20">@StringResources.IndexMobil_Safe_text</div>
+</div>
+
+<div>
+    <div class="lang-selection-container-index">
+        <div class="lang-selection-group">
+            @if (!isSpanish)
+            {
+                <a href="/" class="lang-active">English</a>
+                <a href="/es" class="lang-inactive">Español</a>
+            }
+            else
+            {
+                <a href="/" class="lang-inactive">English</a>
+                <a href="/es" class="lang-active">Español</a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="index-container">
+    <div class="index-title">@StringResources.Index_ConsumerPortal_div</div>
+
+    <div class="index-form-outer-container">
+        <div class="index-form-inner-container">
+            @using (Html.BeginForm("Index", "Home", new { ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", @class = "index-form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group recaptcha-width">
+                    <label for="GcNumber">
+                        @StringResources.Index_GCPrompt_txt <span class="gc-letter-tooltip"><i class="material-icons">help</i><img src="~/Content/Images/SampleLetter.png" class="tooltip-image" /></span>
+                    </label>
+
+                    @Html.TextBoxFor(m => m.GCNumber, new { @class = "form-control", type = "number", placeholder = StringResources.Index_GCPrompt_textbox, autocomplete = "off", maxlength = 16, oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" })
+                    @Html.ValidationMessageFor(m => m.GCNumber, "", new { @class = "text-danger" })
+                    @if (ViewBag.GCNumberNotExist == true)
+                    {
+                        string msg = StringResources.GCNumber_Not_Exist_Error_txt;
+                        msg = msg.Replace("/Home/Contact", contactUsUrl);
+
+                        <span class="field-validation-error text-danger" data-valmsg-for="GCNumber" data-valmsg-replace="true">@Html.Raw(msg)</span>
+                    }
+                </div>
+
+                @Html.HiddenFor(m => m.LeftNumber)
+                @Html.HiddenFor(m => m.RightNumber)
+
+                if (Model != null && Model.LeftNumber.HasValue && Model.RightNumber.HasValue)
+                {
+                    <div class="form-group recaptcha-width">
+                        <div>
+                            <label>@StringResources.Recaptcha_LowScoreQuestion_label</label>
+                        </div>
+                        <div>
+                            <label>@Model.LeftNumber + @Model.RightNumber = </label>
+                            @Html.TextBoxFor(m => m.Sum, new { @class = "form-control sum-input", type = "number", autocomplete = "off", maxlength = 2 })
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group recaptcha-width">
+                    <div class="index-submit-button">
+                        <input name="SubmitButton" type="submit" value="@StringResources.Index_Submit_button" class="btn btn-primary btn-ok" />
+                    </div>
+                    <div class="loader hidden" id="spinner"></div>
+                </div>
+                <div class="margin-top-20 recaptcha-width">
+                    @Html.ActionLink(StringResources.Index_NOGC_text, "LocateAccount", "Home")
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<div id="gcNumberImageModal" class="modal fade" role="dialog">
+    <div class="modal-dialog wide-modal">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="/Content/Images/SampleLetter.png" class="img-responsive" alt="GC Services">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@StringResources.Index_Close_button</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @if (!noRecaptcha)
+    {
+        <script src="@recaptchaUrl"></script>
+        <script>
+            var sitekey = '@ViewBag.SiteKey';
+            var siteAction = 'homepage';
+        </script>
+        <script src="~/Scripts/App/Recaptcha.js"></script>
+    }
+    <script src="~/Scripts/App/Index.js"></script>
+
+    @if (ViewBag.UrlNotFound == true || ViewBag.CardPaymentNotAllowedForGCPayOnline == true)
+    {
+        <script>
+            $(function () {
+                $('#contactUsModal').modal({
+                    show: true
+                });
+            })
+        </script>
+    }
+}
+

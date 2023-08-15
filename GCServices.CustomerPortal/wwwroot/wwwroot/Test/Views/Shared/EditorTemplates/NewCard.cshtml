@@ -1,0 +1,124 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.NewCard
+
+<div class="form-group">
+    <div>@Html.ValidationMessageFor(m => m.CardNumber, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.ExpirationMonth, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.ExpirationYear, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.NameOnCard, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.Cvv, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.Zipcode, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.BillingAddress, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.BillingCity, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.BillingState, "", new { @class = "text-danger" })</div>
+    <div>@Html.ValidationMessageFor(m => m.BillingZipcode, "", new { @class = "text-danger" })</div>
+</div>
+
+<div class="form-group">
+    @Html.HiddenFor(m => m.Card)
+    @Html.HiddenFor(m => m.CardFlag)
+
+    <div class="col-sm-12 input-group-title">@StringResources.PaymentRequest_CardInformation_txt</div>
+    <div class="col-sm-12 desktop-only">@StringResources.PaymentRequest_ImageMapPrompt_txt</div>
+    <div class="col-sm-12">
+        <div name="creditCard" id="creditCard" class="credit-card-regular">
+            <div class="mobile-only col-sm-12">
+                @Html.LabelFor(m => m.CardNumber, new { @class = "control-label required" })
+            </div>
+            <div class="card-number-position">
+                @Html.TextBoxFor(m => m.CardNumber, new { @class = "form-control", type = "number", autocomplete = "off", maxlength = 16, oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" })
+                <div class="desktop-only card-number-label">@StringResources.CardImage_CardNumber</div>
+            </div>
+
+            <div class="mobile-only col-sm-12">
+                @Html.LabelFor(m => m.ExpirationDate, new { @class = "control-label margin-top-10 required" })
+            </div>
+            <div class="desktop-only valid-thru-label">
+                <div>@StringResources.CardImage_ValidThru</div>
+            </div>
+            <div class="expiration-date-position">
+                @Html.TextBoxFor(m => m.ExpirationMonth, new { @class = "form-control expiration-date-input", type = "number", autocomplete = "off", maxlength = 2, minlength = 2, oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" })
+                <label class="control-label">/</label>
+                @Html.TextBoxFor(m => m.ExpirationYear, new { @class = "form-control expiration-date-input", type = "number", autocomplete = "off", maxlength = 2, minlength = 2, oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" })
+                <div class="desktop-only expiration-date-label">@StringResources.CardImage_ExpirationDate</div>
+            </div>
+
+            <div class="mobile-only col-sm-12">
+                @Html.LabelFor(m => m.NameOnCard, new { @class = "control-label margin-top-10 required" })
+            </div>
+            <div class="name-position">
+                @Html.TextBoxFor(m => m.NameOnCard, new { @class = "form-control", autocomplete = "off" })
+                <div class="desktop-only name-label">@StringResources.CardImage_Name</div>
+            </div>
+
+            <div class="desktop-only credit-card-front-label">
+                <div class="credit-card-label-normal">
+                    <div>@StringResources.CardImage_Front_CardNumber</div>
+                    <div>@StringResources.CardImage_Front_ExpirationDate</div>
+                    <div>@StringResources.CardImage_Front_Name</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <div class="input-group-title">@StringResources.PaymentRequest_HomeAddress_txt</div>
+            @Html.LabelFor(m => m.PhoneNumber, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", autocomplete = "off", required = "true", title = StringResources.PaymentRequest_PhonePrompt_txt, maxlength = 14 })
+            </div>
+            @Html.LabelFor(m => m.Address, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Address, new { @class = "form-control", autocomplete = "off" })
+            </div>
+            @Html.LabelFor(m => m.City, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.City, new { @class = "form-control", autocomplete = "off" })
+            </div>
+            @Html.LabelFor(m => m.State, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.DropDownListFor(m => m.State, new SelectList(Enum.GetValues(typeof(GCServices.ConsumerPortal.UI.Models.State))), StringResources.State_Select_txt, new { @class = "form-control" })
+            </div>
+            @Html.LabelFor(m => m.Zipcode, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Zipcode, new { @class = "form-control", autocomplete = "off" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <div class="input-group-title">@StringResources.PaymentRequest_BillingAddress_txt</div>
+            <div class="row">
+                <div class="col-sm-12 form-checkbox">
+                    @Html.CheckBoxFor(m => m.IsBillingAddressSame) @StringResources.PaymentRequest_BillingAddressSame_checkbox
+                </div>
+            </div>
+
+            @Html.LabelFor(m => m.BillingAddress, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.BillingAddress, Model.IsBillingAddressSame ? (object)new { @class = "form-control", autocomplete = "off", disabled = "true" } : new { @class = "form-control", autocomplete = "off" })
+            </div>
+            @Html.LabelFor(m => m.BillingCity, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.BillingCity, Model.IsBillingAddressSame ? (object)new { @class = "form-control", autocomplete = "off", disabled = "true" } : new { @class = "form-control", autocomplete = "off" })
+            </div>
+            @Html.LabelFor(m => m.BillingState, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.DropDownListFor(m => m.BillingState, new SelectList(Enum.GetValues(typeof(GCServices.ConsumerPortal.UI.Models.State))), StringResources.State_Select_txt, Model.IsBillingAddressSame ? (object)new { @class = "form-control", disabled = "true" } : new { @class = "form-control" })
+            </div>
+            @Html.LabelFor(m => m.BillingZipcode, new { @class = "col-sm-2 control-label required" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.BillingZipcode, Model.IsBillingAddressSame ? (object)new { @class = "form-control", autocomplete = "off", disabled = "true" } : new { @class = "form-control", autocomplete = "off" })
+            </div>
+        </div>
+    </div>
+</div>
+
+

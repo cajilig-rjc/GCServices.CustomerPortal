@@ -1,0 +1,9 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.CardFromWallet
+
+@{
+    var selectedCard = Model.ValidPaymentCards.Where(i => i.CreditCardId == Model.SelectedCardId).FirstOrDefault();
+}
+
+<div>
+    @StringResources.SettlementOffer_PaymentCard: @selectedCard.Type @StringResources.HomeController_GetCreditCards__Card_ending_in @selectedCard.Number.Substring(selectedCard.Number.Length - 4)
+</div>

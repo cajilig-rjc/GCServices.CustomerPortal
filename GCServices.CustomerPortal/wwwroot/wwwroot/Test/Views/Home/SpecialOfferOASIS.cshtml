@@ -1,0 +1,66 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.SpecialOfferProgramInfoViewModel
+
+<!--Beginning of Special Offer B -->
+<div class="special-offers-section">
+
+    <div class="special-offers-banner">
+
+        <div class="special-offers-title">@StringResources.SpecialOffers_Offer_B_Title</div>
+        <div class="special-offers-btn">
+            <button type="button" data-toggle="modal" data-target="#offerB" class="btn btn-light">@StringResources.SpecialOffers_Accept_Program</button>
+        </div>
+
+    </div>
+
+    <div class="special-offers-terms">
+
+        <p><b>@StringResources.SpecialOffers_Offer_B_1</b></p>
+        <p>@StringResources.SpecialOffers_Offer_B_2 @Model.Reward.ToString("C").</p>
+        <p>@StringResources.SpecialOffers_Offer_B_3</p>
+
+        <p>
+            <ul>
+                <li>@StringResources.SpecialOffers_Offer_B_Eligibility_1</li>
+                <li>@StringResources.SpecialOffers_Offer_B_Eligibility_2</li>
+                <li>@StringResources.SpecialOffers_Offer_B_Eligibility_3</li>
+                <li>@StringResources.SpecialOffers_Offer_B_Eligibility_4</li>
+
+            </ul>
+        </p>
+
+        <p>@StringResources.SpecialOffers_Offer_B_4_1 @Model.Reward.ToString("C"). @StringResources.SpecialOffers_Offer_B_4_2</p>
+        <p>@StringResources.SpecialOffers_Offer_B_5</p>
+        <p>@StringResources.SpecialOffers_Offer_B_6</p>
+        <p>@StringResources.SpecialOffers_Offer_B_7</p>
+        <p>@StringResources.SpecialOffers_Offer_B_8</p>
+
+    </div>
+</div>
+<!--End of Special Offer B -->
+<!-- Modal Offer B -->
+<div class="modal fade" id="offerB" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <p><b>@StringResources.SpecialOffers_Modal_Offer_B</b></p>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("SpecialOffers", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "specialOfferBForm", name = "specialOfferBForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="ProgramId" name="ProgramId" value="OASIS" />
+                    <button type="button" class="btn btn-primary btn-ok button-width-large margin-right-20" data-dismiss="modal">@StringResources.SpecialOffers_Decline</button>
+                    <input type="submit" value="@StringResources.SpecialOffers_Accept" class="btn btn-primary btn-ok button-width-large" />
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End of Modal Offer B -->

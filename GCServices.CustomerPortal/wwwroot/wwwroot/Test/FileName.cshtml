@@ -1,0 +1,291 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+
+@{
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+
+    if (string.IsNullOrEmpty(ViewBag.BackgroundClass))
+    {
+        ViewBag.BackgroundClass = "background-image-user-agreement";
+    }
+
+    bool isSpanish = false;
+    string homeUrl = System.Configuration.ConfigurationManager.AppSettings["GCWebUrl"];
+    string contactUsUrl = System.Configuration.ConfigurationManager.AppSettings["ContactUsUrl"];
+    string lang = (string)this.ViewContext.RouteData.Values["lang"];
+    string language = "en";
+    if (lang != null)
+    {
+        homeUrl += "/" + lang;
+        string langHome = String.Format(System.Globalization.CultureInfo.InvariantCulture, "/{0}/Home", lang);
+        contactUsUrl = contactUsUrl.Replace("/Home", langHome);
+        isSpanish = lang.StartsWith("es");
+        if (isSpanish) { language = "es"; }
+    }
+
+    if (loginViewModel != null && loginViewModel.ChatEnabledClient && ViewBag.IsUserAgreement != true)
+    {
+        ViewBag.ShowLiveChat = true;
+    }
+
+    ViewBag.HasSession = loginViewModel != null;
+
+    var referrerHost = Request.UrlReferrer != null ? Request.UrlReferrer.Host : string.Empty;
+    var cacpaAccepted = Session["CACPAAccepted"] as bool?;
+    var showCacpa = cacpaAccepted != true &&
+        !string.Equals(referrerHost, Request.Url.Host) &&
+        !referrerHost.EndsWith("gcserv.com", StringComparison.OrdinalIgnoreCase) &&
+        !referrerHost.EndsWith("gcscontact107.com", StringComparison.OrdinalIgnoreCase) &&
+        !referrerHost.EndsWith("gcpayonline.com", StringComparison.OrdinalIgnoreCase);
+}
+
+< !DOCTYPE html >
+< html lang = "@language" >
+< head >
+    < meta charset = "utf-8" />
+    < meta name = "viewport" content = "width=device-width, initial-scale=1.0" >
+    < meta http - equiv = "X-UA-Compatible" content = "IE=Edge" />
+    < title > @ViewBag.Title - GC Services </ title >
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    < link href = "/Content/jquery-ui.css" rel = "stylesheet" />
+    < link href = "/Content/jquery-ui.min.css" rel = "stylesheet" />
+    < link href = "~/favicon.ico" rel = "shortcut icon" type = "image/x-icon" />
+
+    < !--Google Analytics-- >
+    < script >
+        var environment = '@System.Configuration.ConfigurationManager.AppSettings["Environment"]';
+
+if (environment === "Prod")
+{
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function() {
+            (i[r].q = i[r].q ||[]).push(arguments)},i[r].l = 1 * new Date(); a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-106878872-1', 'auto');
+    ga('send', 'pageview');
+}
+    </ script >
+
+    @Scripts.Render("~/bundles/jquery")
+</ head >
+< body class= "@ViewBag.BackgroundClass" >
+    < div class= "body-container" >
+        < div class= "navbar" >
+            < div class= "gc-header" >
+                < div class= "row gc-header-text" >
+                    < div class= "pull-right desktop-only" > @StringResources.Layout_SafeSecureFast_txt </ div >
+                </ div >
+
+                < div >
+                    < div class= "navbar-header" >
+                        < button type = "button" class= "navbar-toggle" data - toggle = "collapse" data - target = ".navbar-collapse" >
+                            < span class= "icon-bar" ></ span >
+                            < span class= "icon-bar" ></ span >
+                            < span class= "icon-bar" ></ span >
+                        </ button >
+                    </ div >
+
+                    < div class= "navbar-collapse collapse" >
+                        < ul class= "nav navbar-nav navbar-right" >
+                            < li >< a href = @homeUrl > @StringResources.Layout_Home_txt </ a ></ li >
+                            < li class= "mobile-only" >< a href = "/" class= "navbar-link-item" > @StringResources.Layout_ConsumerPortal_txt </ a ></ li >
+                            < li >< a href = '@System.Configuration.ConfigurationManager.AppSettings["AboutUsUrl"]' target = "_blank" > @StringResources.Layout_AboutUs_txt </ a ></ li >
+                            < li >< a href = "javascript: void(0)" data - toggle = "modal" data - target = "#contactUsModal" > @StringResources.Layout_ContactUs_txt </ a ></ li >
+                            @if(ViewBag.HideLogout != true)
+                            {
+                                < li > @Html.ActionLink(@StringResources.Layout_CloseSession_txt, "Logout", "Home") </ li >
+                            }
+
+@if(ViewBag.ShowLangSelection == true)
+                            {
+                                < li >
+                                    < div class= "lang-selection-container-layout" >
+                                        < div class= "lang-selection-group" >
+                                            @if(!isSpanish)
+                                            {
+                                                < a href = "/" class= "lang-active" > English </ a >
+                                                < a href = "/es" class= "lang-inactive" > Español </ a >
+                                            }
+                                            else
+{
+                                                < a href = "/" class= "lang-inactive" > English </ a >
+                                                < a href = "/es" class= "lang-active" > Español </ a >
+                                            }
+                                        </ div >
+                                    </ div >
+                                </ li >
+                            }
+                        </ ul >
+                    </ div >
+                </ div >
+            </ div >
+        </ div >
+        < div class= "clearfix body-content-container" >
+            @RenderBody()
+        </ div >
+        < footer >
+            < div class= "footer-container" >
+                < div class= "desktop-only pull-right" >
+                    < img src = "/Content/Images/bottom-logo-1.png" class= "margin-right-20" alt = "bottom-logo-1" width = "120" >
+                    < img src = "/Content/Images/bottom-logo-2.png" class= "margin-right-20" alt = "bottom-logo-2" width = "50" >
+                    < img src = "/Content/Images/bottom-logo-3.png" class= "" alt = "bottom-logo-3" width = "40" >
+                </ div >
+                < div >
+                    < div >
+                        < a > @StringResources.Layout_Copyright_txt & copy; @DateTime.Now.Year @StringResources.Layout_GCLP_txt(@ViewContext.Controller.GetType().Assembly.GetName().Version) </ a >
+                    </ div >
+                    < div >
+                        @Html.ActionLink(StringResources.Layout_PrivacyPolicy_txt, "Privacy", "Home", new { }, new { target = "_blank" })
+                        < a href = '@System.Configuration.ConfigurationManager.AppSettings["AboutUsUrl"]sitemap' target = "_blank" > @StringResources.Layout_SiteMap_txt </ a >
+                        < a href = @homeUrl > @StringResources.Layout_Home_txt </ a >
+                        < a href = '@System.Configuration.ConfigurationManager.AppSettings["AboutUsUrl"]' target = "_blank" > @StringResources.Layout_AboutUs_txt </ a >
+                        < a href = "javascript: void(0)" data - toggle = "modal" data - target = "#contactUsModal" > @StringResources.Layout_ContactUs_txt </ a >
+                    </ div >
+                    @if(!isSpanish)
+                    {
+                        < div >
+                            @Html.ActionLink(StringResources.Layout_NYCLanguage_txt, "NYCLanguage", "Home", new { }, new { target = "_blank" })
+                        </ div >
+                    }
+                </ div >
+            </ div >
+        </ footer >
+    </ div >
+
+    < !--Modal-- >
+    < div id = "contactUsModal" class= "modal fade" role = "dialog" >
+        < div class= "modal-dialog" >
+
+            < !--Modal content-- >
+            < div class= "modal-content" style = "margin-right: 18px" >
+                < div class= "modal-header contact-us-image" >
+                    < button type = "button" class= "close" data - dismiss = "modal" > &times;</ button >
+                </ div >
+                < div class= "modal-body" >
+                    < h2 class= "modal-title" >< b > @StringResources.Layout_ContactUs_txt </ b ></ h2 >
+                    @if(ViewBag.AccountNotFound == true)
+                    {
+                        < div > @StringResources.Layout_AccountNotFound_txt </ div >
+                    }
+                    < div > @StringResources.Layout_PleaseContact_1_txt @ViewBag.PhoneNumber @StringResources.Layout_PleaseContact_2_txt < a href = '@contactUsUrl' > @StringResources.Layout_PleaseContact_3_txt </ a > @StringResources.Layout_PleaseContact_4_txt </ div >
+                </ div >
+            </ div >
+        </ div >
+    </ div >
+    < div id = "termsAndConditionsModal" class= "modal fade" role = "dialog" >
+        < div class= "modal-dialog" >
+
+            < !--Modal content-- >
+            < div class= "modal-content" style = "margin-right: 18px" >
+                < div class= "modal-header" >
+                    < button type = "button" class= "close" data - dismiss = "modal" > &times;</ button >
+                </ div >
+                < div class= "modal-body" >
+                    < p class= "modal-title" style = "text-align: center;" >< strong > @StringResources.Layout_PreAuthorizedTitle_txt </ strong ></ p >
+                    < p ></ p >
+                    < ol >
+                        < li > @StringResources.Layout_PreAuthorized_1_txt </ li >
+                        < li > @StringResources.Layout_PreAuthorized_2_txt </ li >
+                        < li > @StringResources.Layout_PreAuthorized_3_txt </ li >
+                        < li > @StringResources.Layout_PreAuthorized_4_txt </ li >
+                    </ ol >
+                    < p style = "padding-left: 30px;" >< strong >< u > @StringResources.Layout_ToModify_1_1_txt </ u >:</ strong > @StringResources.Layout_ToModify_1_2_txt & nbsp; @StringResources.Layout_ToModify_1_3_txt </ p >
+                    < p style = "padding-left: 30px;" > @StringResources.Layout_Questions_txt </ p >
+                    < table class= "table table-bordered" style = "margin-left: 30px; width: 500px" >
+                        < tbody >
+                            < tr >
+                                < td width = "200" >
+                                    < p > @StringResources.Layout_Office_txt </ p >
+                                </ td >
+                                < td width = "200" >
+                                    < p > @StringResources.Layout_PhoneNumber_txt </ p >
+                                </ td >
+                            </ tr >
+                            < tr >
+                                < td width = "200" >
+                                    < p > @StringResources.Layout_GCLP_txt </ p >
+                                </ td >
+                                < td width = "200" >
+                                    < p > @ViewBag.PhoneNumber </ p >
+                                </ td >
+                            </ tr >
+                        </ tbody >
+                    </ table >
+                </ div >
+            </ div >
+        </ div >
+    </ div >
+
+    @if(showCacpa)
+    {
+        < div id = "cacpaModal" class= "modal fade" data - keyboard = "false" data - show = "true" data - backdrop = "static" >
+            < div class= "modal-dialog modal-dialog-centered" role = "document" >
+                < !--Modal content-- >
+                < div class= "modal-content" style = "margin-right: 18px" >
+                    < div class= "modal-body cacpa-body" >
+                        < div class= "cacpa-description" >
+                            @*< div > @StringResources.Cookies_Privacy_txt @Html.ActionLink(StringResources.Layout_PrivacyPolicy_txt, "Privacy", "Home", new { }, new { target = "_blank", @class = "cacpa-link", id = "cacpaPrivacyLink" }).</ div > *@
+                            < div > @Html.Raw(StringResources.Cookies_Privacy_txt) </ div >
+                            @*< div id = "cacpaPrivacyLink" >
+                                @Html.ActionLink(StringResources.Layout_PrivacyPolicy_txt, "Privacy", "Home", new { }, new { target = "_blank", @class = "cacpa-link" })
+                            </ div > *@
+                        </ div >
+                        < div class= "cacpa-button" >
+                            < button type = "button" class= "btn btn-default" id = "cacpaAcceptBtn" > @StringResources.Index_Close_button </ button >
+                        </ div >
+                    </ div >
+                </ div >
+            </ div >
+        </ div >
+    }
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @if(ViewBag.ShowLiveChat == true)
+    {
+        < !--Start of LiveChat(www.livechatinc.com) code-- >
+        < script type = "text/javascript" >
+            window.__lc = window.__lc || { };
+    window.__lc.license = 11048907;
+    (function() {
+        var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true;
+        lc.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.livechatinc.com/tracking.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(lc, s);
+    })();
+        </ script >
+        < noscript >
+            < a href = "https://www.livechatinc.com/chat-with/10825112/" rel = "nofollow" > Chat with us</ a >,
+            powered by<a href= "https://www.livechatinc.com/?welcome" rel = "noopener nofollow" target = "_blank" > LiveChat </ a >
+        </ noscript >
+        < !--End of LiveChat code-- >
+    }
+
+@if(ViewBag.HasSession == true)
+    {
+        < script type = "text/javascript" >
+            setTimeout(function() {
+                $.ajax({
+        url: "/Home/Timeout",
+                    type: "POST",
+                    success: function(data) {
+            }
+        });
+
+        alert("@StringResources.Session_Timeout_Message");
+        window.location.href = '/Home/Index';
+
+    }, (@Session.Timeout - 1) * 60000);
+        </ script >
+    }
+
+@if(showCacpa)
+    {
+        < script src = "~/Scripts/App/Cacpa.js" ></ script >
+    }
+</ body >
+</ html >
+

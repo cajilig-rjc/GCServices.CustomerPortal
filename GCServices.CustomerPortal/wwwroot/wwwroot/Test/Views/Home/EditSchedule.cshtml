@@ -1,0 +1,224 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@using GCServices.Treasury.Eps.Service.Agent
+@model GCServices.ConsumerPortal.UI.Models.PaymentScheduleViewModel
+@{
+    ViewBag.Title = StringResources.EditSchedule_VBT;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+
+    string settlementOfferLink = string.Format(System.Globalization.CultureInfo.InvariantCulture, StringResources.SettlementOffer_Link, "EditSchedule");
+    bool noCardInWallet = Model.PaymentCardsViewModel.PaymentCards == null || !Model.PaymentCardsViewModel.PaymentCards.Any();
+    var grid = new WebGrid(Model.PaymentArrangement.ScheduledPayments, defaultSort: "PaymentDate", selectionFieldName: "selectedRow", ajaxUpdateContainerId: "gridContent", rowsPerPage: 5000);
+}
+
+@functions {
+    public string GetRunStatusText(ScheduledPaymentRunStatus status)
+    {
+        string text = string.Empty;
+        switch (status)
+        {
+            case ScheduledPaymentRunStatus.Batched1:
+                text = StringResources.ScheduledPaymentRunStatus_Batched1;
+                break;
+            case ScheduledPaymentRunStatus.Batched2:
+                text = StringResources.ScheduledPaymentRunStatus_Batched2;
+                break;
+            case ScheduledPaymentRunStatus.NotProcessed:
+                text = StringResources.ScheduledPaymentRunStatus_NotProcessed;
+                break;
+            case ScheduledPaymentRunStatus.Approved1:
+                text = StringResources.ScheduledPaymentRunStatus_Approved1;
+                break;
+            case ScheduledPaymentRunStatus.Approved2:
+                text = StringResources.ScheduledPaymentRunStatus_Approved2;
+                break;
+            case ScheduledPaymentRunStatus.InvalidCard:
+                text = StringResources.ScheduledPaymentRunStatus_InvalidCard;
+                break;
+            case ScheduledPaymentRunStatus.Denied1:
+                text = StringResources.ScheduledPaymentRunStatus_Denied1;
+                break;
+            case ScheduledPaymentRunStatus.Denied2:
+                text = StringResources.ScheduledPaymentRunStatus_Denied2;
+                break;
+            case ScheduledPaymentRunStatus.Missed:
+                text = StringResources.ScheduledPaymentRunStatus_Missed;
+                break;
+        }
+
+        return text;
+    }
+}
+
+<script>
+    var Resources = {
+        EditScheduleJs_DeletePayment_confirm: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.EditScheduleJs_DeletePayment_confirm))",
+        EditScheduleJs_CannotUpdatePaymentSchedule_alert: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.EditScheduleJs_CannotUpdatePaymentSchedule_alert))",
+        EditScheduleJs_Disregard_confirm: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.EditScheduleJs_Disregard_confirm))",
+        EditScheduleJs_MaxPayment_alert: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.EditScheduleJs_MaxPayment_alert))",
+        EditScheduleJs_MinPayment_txt: "@Html.Raw(HttpUtility.JavaScriptStringEncode(StringResources.NewScheduleJs_MinPayment_txt))",
+    };
+
+    function checkChange() {
+    var isPaymentArrangementChanged = $("#IsPaymentArrangementChanged").val() === "True";
+    if (isPaymentArrangementChanged) {
+        if (!confirm('@Html.Raw(StringResources.EditScheduleJs_Disregard_confirm)')) {
+            return false;
+        }
+    }
+    return true;
+}
+</script>
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.HasSettlementOffer && Model.ClientAllowsSettlement)
+        {
+            <div class="text-danger">
+                @Html.Raw(settlementOfferLink)
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-xs-12">
+                <p>@StringResources.EditSchedule_PleaseReview_p</p>
+                @Html.ValidationMessageFor(m => m.GcNumber, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-xs-12">
+                @if (Model.CardFlag == "C")
+                {
+                    <div>@StringResources.Cards_CreditOnly_txt</div>
+                }
+                else if (Model.CardFlag == "D")
+                {
+                    <div>@StringResources.Cards_DebitOnly_txt</div>
+                }
+
+                @grid.GetHtml(htmlAttributes: new { id = "EditPaymentScheduleTable" },
+                            tableStyle: "webGrid table schedule-table",
+                            headerStyle: "header",
+                            alternatingRowStyle: "alt",
+                            selectedRowStyle: "select",
+                            columns: grid.Columns(
+                                grid.Column(null, null, @<text><input type="hidden" id="AgencyTrackingId" value="@item.AgencyTrackingId" /></text>, style: "Zero"),
+           grid.Column("RunStatus", StringResources.EditSchedule_Status_gridcol, @<text><span><label id="lblRunStatus">@GetRunStatusText(item.RunStatus)</label></span><input type="hidden" id="RunStatus" value="@item.RunStatus" /></text>, style: "Medium"),
+grid.Column("PaymentDate", StringResources.EditSchedule_PaymentDate_gridcol, @<text><span class="display-mode"><label id="lblPaymentDate">@item.PaymentDate.ToString("MM/dd/yyyy")</label></span>
+<input type="text" readonly name="PaymentDate" value="@item.PaymentDate.ToString("d")" class="edit-mode form-control datepick" /></text>, style: "Medium"),
+grid.Column("PaymentAmount", StringResources.EditSchedule_PaymentAmount_gridcol, @<text><span class="display-mode"><label id="lblPaymentAmount">@item.PaymentAmount.ToString("C2")</label></span>
+<input type="text" id="PaymentAmount" value="@item.PaymentAmount" class="edit-mode form-control" maxlength=7 oninput="onAmountInput(this)" /></text>, style: "Medium"),
+grid.Column("CreditCard", StringResources.EditSchedule_CreditCard_gridcol, @<text>
+    @if (item.CreditCard == null && noCardInWallet)
+     {
+        <span class="display-mode"><label id="lblCreditCard"></label></span>
+     }
+     else if (item.CreditCard == null && !noCardInWallet)
+     {
+        <span class="display-mode"><label id="lblCreditCard"></label></span>
+        @Html.DropDownListFor(m => m.PaymentCardsViewModel.SelectedCreditCardId, new SelectList(Model.PaymentCardsViewModel.PaymentCards, "Id", "DisplayNumber"), new { @class = "edit-mode form-control", id = "CreditCard" })
+     }
+     else
+     {
+        <span class="display-mode"><label id="lblCreditCard">@item.CreditCard.Type @StringResources.HomeController_GetCreditCards__Card_ending_in @item.CreditCard.Number.Substring(item.CreditCard.Number.Length - 4)</label></span>
+        @Html.DropDownListFor(m => m.PaymentCardsViewModel.SelectedCreditCardId, new SelectList(Model.PaymentCardsViewModel.PaymentCards, "Id", "DisplayNumber", Model.PaymentCardsViewModel.SelectedCreditCardId = item.CreditCard.CreditCardId), new { @class = "edit-mode form-control", id = "CreditCard" })
+     }
+</text>, style: "Large"),
+grid.Column("Action", StringResources.NewSchedule_PaymentScheduleAction_gridcol, format: @<text>
+    @if (item.CreditCard != null || !noCardInWallet)
+     {
+        <button type="button" class="btn btn-xs btn-primary edit-user display-mode" style="width: 55px">@StringResources.EditSchedule_Edit_button</button>
+        <button type="button" class="btn btn-xs btn-primary delete-user display-mode" style="width: 55px">@StringResources.EditSchedule_Delete_button</button>
+        <button type="button" class="btn btn-xs btn-primary save-user edit-mode" style="width: 55px">@StringResources.EditSchedule_Save_button</button>
+        <button type="button" class="btn btn-xs btn-cancel cancel-user edit-mode" style="width: 55px">@StringResources.EditSchedule_Cancel_button</button>
+     }
+</text>, canSort: false, style: "Medium")
+))
+            </div>
+
+            <div class="col-xs-12 align-dynamic">
+                <h4>@Html.ActionLink(@StringResources.EditSchedule_AddNewCard_div, "AddNewCard")</h4>
+            </div>
+
+            @using (Html.BeginForm("EditSchedule", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "newScheduleForm", name = "newScheduleForm" }))
+            {
+                @Html.AntiForgeryToken()
+            <div class="col-xs-12">
+                <p>@Html.CheckBoxFor(m => m.IsAgreed, new { id = "AgreeCheckBox" }) @StringResources.EditSchedule_AgreePaymentSchedule_txt <a href="javascript: void(0)" data-toggle="modal" data-target="#termsAndConditionsModal">@StringResources.EditSchedule_Terms1_txt</a>.</p>
+                <p>@StringResources.EditSchedule_Terms2_txt</p>
+                <p>@StringResources.EditSchedule_Terms3_txt</p>
+                <p>@StringResources.EditSchedule_Terms4_txt</p>
+                <p>@StringResources.RefundRequestDisclosure_txt</p>
+            </div>
+
+                <div class="form-group margin-top-20" id="Buttons">
+                    <div class="col-xs-12">
+                        @Html.HiddenFor(m => m.IsPaymentArrangementChanged)
+                        @Html.HiddenFor(m => m.IsAgreed)
+                        @Html.HiddenFor(m => m.AmountDue)
+                        @Html.HiddenFor(m => m.MinAmountDue)
+
+                        <div class="col-sm-offset-1 col-sm-10 col-xs-12 margin-top-10 btn-group">
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                <input type="submit" name="cancelButton" id="cancelButton" value="@StringResources.EditSchedule_AgreeCancel_button" class="btn btn-default btn-cancel button-width-large" onclick="return checkChange();" />
+                            </div>
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                <input type="submit" name="deleteButton" id="deleteButton" value="@StringResources.EditSchedule_AgreeDelete_button" class="btn btn-default btn-cancel button-width-large" onclick="return confirm('@Html.Raw(StringResources.EditSchedule_AgreeDeleteConfirm_txt)');" />
+                            </div>
+                            <div class="col-sm-4 col-xs-12 center-align margin-top-10">
+                                @if (Model.IsAgreed && Model.IsPaymentArrangementChanged && Model.PaymentArrangement.ScheduledPayments.Length > 0)
+                                {
+                                    <input type="submit" name="submitButton" id="submitButton" value="@StringResources.EditSchedule_SaveSchedule_button" class="btn btn-primary btn-ok button-width-large" />
+                                }
+                                else
+                                {
+                                    <div id="submitButtonToolTip" class="mytooltip" )>
+                                        <input type="submit" name="submitButton" id="submitButton" value="@StringResources.EditSchedule_SaveSchedule_button" class="btn btn-primary btn-ok button-width-large" disabled />
+                                        <span class="tooltiptext">@StringResources.EditSchedule_ToolTip_txt</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.ShowMaxPayDateMessage)
+{
+    @Html.Partial("MaxPayDateMessage")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/App/Common.js"></script>
+    <script src="~/Scripts/App/EditSchedule.js"></script>
+}

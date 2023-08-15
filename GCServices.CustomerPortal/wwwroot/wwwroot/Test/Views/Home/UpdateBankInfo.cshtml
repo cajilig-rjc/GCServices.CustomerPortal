@@ -1,0 +1,204 @@
+﻿@using GCServices.ConsumerPortal.UI
+@using GCServices.ConsumerPortal.UI.Models
+@model BankInfoViewModel
+@{
+    ViewBag.Title = StringResources.UpdateBankInfo_Title;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div>
+    <div>
+        <h1 class="left-title">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6 col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row padding-left-right-dynamic">
+            <div class="col-xs-12 margin-bottom-20">
+            </div>
+
+            @using (Html.BeginForm("UpdateBankInfo", "Home", new { }, FormMethod.Post, new { @class = "form-horizontal margin-left-10", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div>
+                    @Html.HiddenFor(m => m.Name)
+                    @Html.HiddenFor(m => m.GcNumber)
+                    @Html.HiddenFor(m => m.AmountDue)
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2">
+                        <div>@Html.ValidationMessageFor(m => m.AccountName, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.Zipcode, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.BankAccountType, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.BankName, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.RoutingNumber, "", new { @class = "text-danger" })</div>
+                        <div>@Html.ValidationMessageFor(m => m.AccountNumber, "", new { @class = "text-danger" })</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.BankAccountType, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                <label class="radio-inline">
+                                    @Html.RadioButtonFor(m => m.BankAccountType, BankAccountType.Checking, Model.BankAccountType == BankAccountType.Checking ? (object)new { @checked = "checked", data_toggle = "modal", data_target = "#checkImageModal" } : new { data_toggle = "modal", data_target = "#checkImageModal" }) @StringResources.BankInfo_Checking
+                                </label>
+                                <label class="radio-inline">
+                                    @Html.RadioButtonFor(m => m.BankAccountType, BankAccountType.Savings, Model.BankAccountType == BankAccountType.Savings ? (object)new { @checked = "checked", data_toggle = "modal", data_target = "#checkImageModal" } : new { data_toggle = "modal", data_target = "#checkImageModal" }) @StringResources.BankInfo_Savings
+                                </label>
+                                <label class="radio-inline">
+                                    @Html.RadioButtonFor(m => m.BankAccountType, BankAccountType.Business, Model.BankAccountType == BankAccountType.Business ? (object)new { @checked = "checked", data_toggle = "modal", data_target = "#checkImageModal" } : new { data_toggle = "modal", data_target = "#checkImageModal" }) @StringResources.BankInfo_Business
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.AccountName, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.AccountName, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.Address, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.Address, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.Zipcode, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.Zipcode, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.City, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.City, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.State, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-6 col-xs-12">
+                                @Html.DropDownListFor(m => m.State, new SelectList(Enum.GetValues(typeof(State))), StringResources.State_Select_txt, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            <label for="RoutingNumber" class="col-sm-5 col-xs-8 control-label required">
+                                @StringResources.BankInfo_RoutingNumber
+                                <span class="gc-letter-tooltip">
+                                    <i class="material-icons md-18">help</i>
+                                    <img id="checkingImage2" src="~/Content/Images/check-example-checking.png" class="tooltip-image checking-image" />
+                                    <img id="savingsImage2" src="~/Content/Images/check-example-savings.png" class="tooltip-image savings-image" />
+                                    <img id="businessImage2" src="~/Content/Images/check-example-business.png" class="tooltip-image business-image" />
+                                </span>
+                            </label>
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.RoutingNumber, new { @class = "form-control bankinfo-input", type = "number", autocomplete = "off" })
+                            </div>
+                            <div class="col-sm-7 col-xs-12">
+                                <div id="routingNumberError" class="hidden alert-warning">@StringResources.BankInfo_RoutingNumber_ErrorMessage</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            @Html.LabelFor(m => m.BankName, new { @class = "col-sm-5 col-xs-8 control-label required" })
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.BankName, new { @class = "form-control bankinfo-input" })
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 margin-bottom-mobile">
+                            <label for="AccountNumber" class="col-sm-5 col-xs-8 control-label required">
+                                <span>
+                                    @StringResources.BankInfo_AccountNumber
+                                    <span class="gc-letter-tooltip">
+                                        <i class="material-icons md-18">help</i>
+                                        <img id="checkingImage2" src="~/Content/Images/check-example-checking.png" class="tooltip-image checking-image" />
+                                        <img id="savingsImage2" src="~/Content/Images/check-example-savings.png" class="tooltip-image savings-image" />
+                                        <img id="businessImage2" src="~/Content/Images/check-example-business.png" class="tooltip-image business-image" />
+                                    </span>
+                                </span>
+                            </label>
+                            <div class="col-sm-7 col-xs-12">
+                                @Html.TextBoxFor(m => m.AccountNumber, new { @class = "form-control bankinfo-input", type = "number", autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="text-center">
+                        <div class="margin-top-10 btn-group">
+                            <div class="btn">
+                                @Html.ActionLink(StringResources.UpdateBankInfo_Cancel, "ManageMyAccount", new { }, new { @class = "btn btn-primary btn-ok" })
+                            </div>
+                            <div class="btn">
+                                <input type="submit" value="@StringResources.UpdateBankInfo_Submit_Changes" class="btn btn-primary btn-ok" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="checkImageModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog check-image-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-header">
+                <button type="button" class="close close-circle" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img id="checkingImage" src="~/Content/Images/check-example-checking.png" class="check-image checking-image"/>
+                </div>
+                <div>
+                    <img id="savingsImage" src="~/Content/Images/check-example-savings.png"  class="check-image savings-image"/>
+                </div>
+                <div>
+                    <img id="businessImage" src="~/Content/Images/check-example-business.png"  class="check-image business-image"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/ShowContent.js"></script>
+    <script src="~/Scripts/App/UpdateBankInfo.js"></script>
+}

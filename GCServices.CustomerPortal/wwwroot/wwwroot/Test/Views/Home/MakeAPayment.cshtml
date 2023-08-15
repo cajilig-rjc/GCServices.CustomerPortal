@@ -1,0 +1,217 @@
+﻿@using System.Configuration
+@using GCServices.ConsumerPortal.UI
+@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.LoginViewModel
+@{
+    ViewBag.Title = StringResources.MakeAPayment_cshtml_Execute_MAKE_A_PAYMENT;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    var showMillerDisclosure = loginViewModel != null && loginViewModel.ShowMillerDisclosure;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="row">
+        <div id="note">
+            @ViewBag.Message
+        </div>
+    </div>
+}
+
+<div>
+    <div>
+        <h1 class="left-title">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row margin-top-20 margin-bottom-50">
+            <div class="col-sm-4">
+                @if (Model.NsfFlag)
+                {
+                    <a href="javascript: void(0)" data-toggle="modal" data-target="#hasNsfFlag" class="home-component-action">
+                        <div class="home-component make-a-payment">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Make_Payment</h2>
+                            </div>
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <a href='@Url.Action("PaymentRequest", "Home", new { cardOption = "None" })' class="home-component-action">
+                        <div class="home-component make-a-payment">
+                            <div>
+                                <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Make_Payment</h2>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+
+            @if (!Model.IsOneTimePayment)
+            {
+                <div class="col-sm-4">
+                    @if (Model.IsNewSchedule)
+                    {
+                        <a href='@Url.Action("NewSchedule", "Home")' class="home-component-action">
+                            <div class="home-component create-edit-schedule">
+                                <div>
+                                    <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Create_New_Schedule</h2>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        if (Model.NsfFlag)
+                        {
+                            <a href="javascript: void(0)" data-toggle="modal" data-target="#arrangementWithNsfFlag" class="home-component-action">
+                                <div class="home-component create-edit-schedule">
+                                    <div>
+                                        <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Edit_Existing_Schedule</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        else if (Model.HasSettlementPaymentArrangement)
+                        {
+                            <a href='@Url.Action("EditSettlementSchedule", "Home")' class="home-component-action">
+                                <div class="home-component create-edit-schedule">
+                                    <div>
+                                        <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Edit_Settlement_Schedule</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        else
+                        {
+                            <a href='@Url.Action("EditSchedule", "Home")' class="home-component-action">
+                                <div class="home-component create-edit-schedule">
+                                    <div>
+                                        <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Edit_Existing_Schedule</h2>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+            }
+
+            @if (!Model.IsDarsAccount)
+            {
+                <div class="col-sm-4">
+                    @if (Model.NsfFlag)
+                    {
+                        <a href="javascript: void(0)" data-toggle="modal" data-target="#hasNsfFlag" class="home-component-action">
+                            <div class="home-component update-wallet">
+                                <div>
+                                    <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Update_My_Wallet</h2>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href='@Url.Action("UpdateWallet", "Home")' class="home-component-action">
+                            <div class="home-component update-wallet">
+                                <div>
+                                    <h2 class="home-component-header">@StringResources.MakeAPayment_cshtml_Execute_Update_My_Wallet</h2>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="millerDisclosureModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-body">
+                <div>@StringResources.Miller_Disclosure_1 @Model.AmountDue.ToString("C"). @StringResources.Miller_Disclosure_2</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="hasNsfFlag" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-body">
+                <div>@StringResources.HasNsfFlag_1_txt @ViewBag.PhoneNumber @StringResources.HasNsfFlag_2_txt</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="arrangementWithNsfFlag" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="margin-right: 18px">
+            <div class="modal-body">
+                <div>@StringResources.ArrangementWithNsfFlag_1_txt @ViewBag.PhoneNumber.</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-ok button-width-large" data-dismiss="modal">@StringResources.Text_OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/UserAgreement.js"></script>
+}
+
+@if (showMillerDisclosure)
+{
+    <script>
+        $(function () {
+            $('#millerDisclosureModal').modal({
+                show: true
+            });
+        })
+    </script>
+}

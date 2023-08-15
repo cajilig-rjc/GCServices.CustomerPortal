@@ -1,0 +1,70 @@
+﻿@model GCServices.ConsumerPortal.UI.Models.BankInfoViewModel
+
+@{
+    ViewBag.Title = StringResources.ManageBankInfo_Title;
+    ViewBag.BackgroundClass = "background-image-payment-review";
+}
+
+<div>
+    <div>
+        <h1 class="left-title">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                    <a href='@Url.Action("MakeAPayment", "Home")' class="btn btn-primary btn-ok margin-left-10">@StringResources.ManageMyAccount_cshtml_Execute_Make_a_Payment</a>
+                </div>
+                <div class="col-sm-6 col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row padding-left-right-dynamic">
+            <div class="col-xs-12 margin-top-20">
+                <p>@StringResources.ManageBankInfo_Page_Description</p>
+            </div>
+
+            <div class="col-xs-12 margin-bottom-20">
+                @Html.ActionLink(StringResources.ManageMyAccount_Update_Bank_Information, "UpdateBankInfo", "Home", null, new { @class = "btn btn-primary btn-ok" })
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-5 col-sm-3">@StringResources.BankInfo_BankName</div>
+                    <div class="col-xs-7 col-sm-9 font-weight-bold">@Html.DisplayFor(m => m.BankName)</div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="col-xs-5 col-sm-3">@StringResources.BankInfo_RoutingNumber</div>
+                    <div class="col-xs-7 col-sm-9 font-weight-bold">@Html.DisplayFor(m => m.RoutingNumber)</div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="col-xs-5 col-sm-3">@StringResources.BankInfo_AccountNumber</div>
+                    <div class="col-xs-7 col-sm-9 font-weight-bold">@Html.DisplayFor(m => m.AccountNumber)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/App/ShowContent.js"></script>
+}

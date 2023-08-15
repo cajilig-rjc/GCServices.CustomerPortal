@@ -1,0 +1,83 @@
+﻿@using System.Configuration
+@using GCServices.ConsumerPortal.UI
+@model GCServices.ConsumerPortal.UI.Models.SpecialOffersViewModel
+@{
+    ViewBag.Title = StringResources.SpecialOffers_cshtml_Execute_SPECIAL_OFFERS;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="row">
+        <div id="note">
+            @ViewBag.Message
+        </div>
+    </div>
+}
+
+<div>
+    <div>
+        <h1 class="left-title">@ViewBag.Title</h1>
+    </div>
+
+    <div class="view-content-container">
+        <div class="gray-box">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>@StringResources.PaymentRequest_Welcome_txt @Html.DisplayFor(m => m.Name)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-xs-12 align-dynamic">
+                    <h4>@Html.DisplayFor(m => m.GcNumber)</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <a href='@Url.Action("ManageMyAccount", "Home")' class="btn btn-primary btn-ok">@StringResources.MakeAPayment_cshtml_Execute_Manage_My_Account</a>
+                </div>
+                <div class="col-sm-6  col-xs-12 align-dynamic">
+                    <h4><b>@Html.LabelFor(m => m.AmountDue): @Html.DisplayFor(m => m.AmountDue)</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="agreement-content">
+
+            <h3>@StringResources.ManageMyAccount_cshtml_Execute_Special_Offers</h3>
+            <p><b>@StringResources.SpecialOffers_Top_Of_Page_1 @ViewBag.PhoneNumber @StringResources.SpecialOffers_Top_Of_Page_2</b></p>
+
+            <hr>
+            
+            @if (Model.AgreedToViewOffers && Model.PassSecondaryValidation)
+            {
+                foreach (var programInfo in Model.ProgramInfos)
+                 {
+                     if (programInfo.EligibleToAccept)
+                     {
+                         @Html.Partial("SpecialOffer" + programInfo.ProgramId, programInfo)
+                     }
+                 }
+            }
+            else
+            {
+                using (Html.BeginForm("AgreeToViewSpecialOffers", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                 {
+                     @Html.AntiForgeryToken()
+                     <input type="hidden" id="agreedToViewOffers" name="agreedToViewOffers" value="true" />
+                     <input type="submit" value="@StringResources.SpecialOffers_View_Offers" class="btn btn-primary btn-ok button-width-large" />
+                 }
+            }
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/App/SpecialOffers.js"></script>
+}

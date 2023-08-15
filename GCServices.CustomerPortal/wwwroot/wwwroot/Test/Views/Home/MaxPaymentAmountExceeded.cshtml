@@ -1,0 +1,26 @@
+﻿@using GCServices.ConsumerPortal.UI.Models
+@model GCServices.ConsumerPortal.UI.Models.LoginViewModel
+@{
+    ViewBag.Title = StringResources.SettlementOffer_Title;
+    ViewBag.BackgroundClass = "background-image-user-agreement";
+    var loginViewModel = Session["LoginModel"] as LoginViewModel;
+    ViewBag.PhoneNumber = loginViewModel != null && !string.IsNullOrEmpty(loginViewModel.CustomerServicePhoneNumber) ?
+        loginViewModel.CustomerServicePhoneNumber : StringResources.CustomerServicePhoneNumber;
+}
+
+<div>
+    <div>
+        <div class="left-title">@ViewBag.Title</div>
+    </div>
+
+    <div class="view-content-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>@StringResources.Max_Payment_Amount_Exceeded_1_txt @Model.MaxAmountDue.ToString("C"). @StringResources.Max_Payment_Amount_Exceeded_2_txt @ViewBag.PhoneNumber @StringResources.Max_Payment_Amount_Exceeded_3_txt</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/App/UserAgreement.js"></script>
